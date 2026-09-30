@@ -206,3 +206,7 @@ Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4 · Drizzle 
 - [`research/`](research/): hackathon requirements, previous-winner analysis, idea bank (22 concepts), evidence register, product thesis, adversarial review
 - [`docs/architecture.md`](docs/architecture.md), [`docs/business.md`](docs/business.md), [`docs/measurements.md`](docs/measurements.md)
 - The YouCam upload/poll client pattern was adapted from the author's previous hackathon project (MirrorIQ); everything else was built new for this hackathon.
+
+## License
+
+[MIT](LICENSE) © 2026 Tushar Agarwal. YouCam and Perfect Corp. are trademarks of Perfect Corp.; this project uses the YouCam API under its [terms of service](https://www.makeupar.com/perfectbeauty/youcam/terms-of-service-api). Demo portraits are AI-generated.
