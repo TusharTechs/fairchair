@@ -43,7 +43,7 @@ export default async function Home() {
               not the argument.
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink-2">
-              FairChair measures a client&apos;s hair from two photos with <strong className="font-semibold text-ink">YouCam Hair AI</strong>, then
+              FairChair measures a client&apos;s hair from four quick selfies with <strong className="font-semibold text-ink">YouCam Hair AI</strong>, then
               turns your menu into a line-item quote, an appointment as long as the hair actually needs, and a supply list —{" "}
               <em>before</em> anyone books.
             </p>
@@ -128,7 +128,7 @@ export default async function Home() {
               <Step
                 n="1"
                 title="Measure"
-                body="The client takes a front photo (and optionally the back). YouCam's hair detectors read curl pattern, density, natural length and frizz — plus hair colour for extension services."
+                body="The client takes four guided selfies — straight on, turned right, turned left, chin down. YouCam's hair detectors read curl pattern, density, natural length and frizz, plus hair colour for extension services."
               />
               <Step
                 n="2"

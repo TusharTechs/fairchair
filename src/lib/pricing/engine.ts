@@ -85,8 +85,8 @@ function resolveBuckets(basis: AdjustmentBasis, m: Measurements, options: QuoteO
         because: {
           type: "measurement",
           key: basis,
-          text: `${t.mapping.replace(" to ", "–")} curl pattern`,
-          youcam: `Hair Type: ${t.mapping} · ${t.term}`,
+          text: `${t.mapping.replace(" to ", "–").toUpperCase()} curl pattern`,
+          youcam: `Hair Type: ${t.mapping.toUpperCase().replace(" TO ", " to ")} · ${t.term}`,
         },
       };
     }

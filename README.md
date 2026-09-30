@@ -1,10 +1,23 @@
-# FairChair
+<p align="center">
+  <img src="public/brand/fairchair-mark.svg" width="96" height="96" alt="FairChair logo">
+</p>
 
-**Honest quotes for textured hair, measured before anyone books.**
+<h1 align="center">FairChair</h1>
+
+<p align="center"><strong>Honest quotes for textured hair, measured before anyone books.</strong></p>
 
 FairChair turns four client selfies into a line-item price, an appointment as long as the hair actually needs, and a supply list for braiders and extension stylists, using YouCam's hair type, density, length and frizz detection.
 
 Built for the [YouCam API Skin AI & eCommerce VTO Hackathon](https://youcam-api-skin-ai-ecommerce.devpost.com/).
+
+<p align="center">
+  <img src="docs/screenshots/two-heads.png" alt="Same style, two heads, two honest quotes: every difference traced to a YouCam measurement" width="100%">
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/landing.png" alt="FairChair landing page" width="49%">
+  <img src="docs/screenshots/stylist.png" alt="Stylist dashboard with a live YouCam measured request" width="49%">
+</p>
 
 ---
 
@@ -146,6 +159,7 @@ More detail: [`docs/architecture.md`](docs/architecture.md).
 
 ## Try it
 
+- **Compare:** `/compare`: the two-heads demo on its own page.
 - **Client:** `/s/amara-braids-demo`: pick a style, then use your own selfies (live) or a demo client (recorded).
 - **Stylist:** `/studio/amara-braids-demo?key=demo`: requests, calendar, menu & rules (edit and watch the preview quote change), accuracy, share links.
 - **Your own studio:** `/start`.
