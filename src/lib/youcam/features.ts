@@ -17,8 +17,15 @@ export type AnalysisFeature = "hair-type" | "hair-density" | "hair-length" | "ha
  * [front, right, left] (45° yaw, same size); length and colour take the front
  * view; density takes a front-facing selfie with the head lowered ~45°.
  */
-export type View = "front" | "right" | "left" | "down";
-export const VIEWS: View[] = ["front", "right", "left", "down"];
+export type View = "front" | "right" | "left" | "down" | "full";
+/** `full` is an optional step-back shot (YouCam Camera Kit hairlength mode); length prefers it. */
+export const VIEWS: View[] = ["front", "right", "left", "down", "full"];
+
+/** The photos a feature reads for a given set of captured views. */
+export function viewsFor(feature: AnalysisFeature, available: Partial<Record<View, unknown>>): View[] {
+  if (feature === "hair-length" && available.full) return ["full"];
+  return FEATURES[feature].views;
+}
 
 type FeatureDef = {
   label: string;

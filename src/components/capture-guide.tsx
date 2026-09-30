@@ -7,6 +7,7 @@ export function PoseIcon({ view, className }: { view: View; className?: string }
     right: <path d="M24 18c8-3 16 2 17 12s-5 14-11 14c-4 0-7-3-7-3" />,
     left: <path d="M40 18c-8-3-16 2-17 12s5 14 11 14c4 0 7-3 7-3" />,
     down: <path d="M21 26c0-8 5-12 11-12s11 4 11 12c0 5-4 9-11 11-7-2-11-6-11-11Z" />,
+    full: <ellipse cx="32" cy="22" rx="7" ry="8.5" />,
   }[view];
   return (
     <svg viewBox="0 0 64 64" className={className} aria-hidden fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -16,6 +17,7 @@ export function PoseIcon({ view, className }: { view: View; className?: string }
       {view === "left" && <path d="M16 12l-6 6 6 6M10 18h12" />}
       {view === "down" && <path d="M52 10v12M47 17l5 5 5-5" />}
       {view === "front" && <path d="M22 50v8M42 50v8" strokeDasharray="2 3" />}
+      {view === "full" && <path d="M24 30c-2 8-2 16 0 24M40 30c2 8 2 16 0 24" />}
     </svg>
   );
 }

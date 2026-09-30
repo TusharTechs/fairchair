@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { FEATURES, featuresFor, mergeMeasurements, unitsFor } from "../features";
+import { FEATURES, featuresFor, mergeMeasurements, unitsFor, viewsFor } from "../features";
 
 // Result shapes copied from the documented response schemas.
 describe("YouCam result normalizers", () => {
@@ -38,6 +38,11 @@ describe("YouCam result normalizers", () => {
     expect(FEATURES["hair-length"].views).toEqual(["front"]);
     expect(FEATURES["hair-type"].body(["f", "r", "l"])).toEqual({ src_file_ids: ["f", "r", "l"] });
     expect(FEATURES["hair-density"].body(["d"])).toEqual({ src_file_id: "d" });
+  });
+  it("length uses the step-back shot when the guided camera provided one", () => {
+    expect(viewsFor("hair-length", { front: 1 })).toEqual(["front"]);
+    expect(viewsFor("hair-length", { front: 1, full: 1 })).toEqual(["full"]);
+    expect(viewsFor("hair-type", { front: 1, right: 1, left: 1, full: 1 })).toEqual(["front", "right", "left"]);
   });
   it("costs and merging", () => {
     const f = featuresFor(["type", "density", "length", "frizz"]);

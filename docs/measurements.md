@@ -65,3 +65,8 @@ Four views of the "curly-collarbone" portrait posted to `POST /api/analyses` (kn
 **Decision:** 2/4 wrong, both black hair on dark skin — the users this product exists for. FairChair **does not auto-select shade** from `hair_color`; the shopper chooses a colour family and is told which shade numbers to swatch. This also removes 20 units per match. Raw: `spike/demo-extras-*.json`.
 
 **Extension try-on (`hair-ext`, 1 unit):** 3 templates exist (`all_length_1`, `all_length_2_`, `all_length_3`; titles "Length 1–3"; no length/colour parameter). 6/6 runs succeeded (7–15 s). The added hair **keeps the client's own curl pattern**, which is exactly what a blend preview should show. Length differences mostly fall below a head-and-shoulders frame, so the UI presents it as "your hair with extensions", not exact inches.
+
+## Run 6 — 2026-10-01 · YouCam JS Camera Kit (guided capture)
+- Loads without an API key; modes used: `hairlength` (1 phase, step-back), `hairtype` (3 phases: front, right, left), `hairdensity` (2 phases; the last is the lowered head).
+- **Found:** the docs name the init callback `window.YMKAsyncInit`, but sdk.js v2.5 calls `window.ymkAsyncInit` (lower-case y) — an integration written from the docs never initialises. FairChair defines both.
+- Verified in a camera-less browser: SDK loads, Camera Kit mounts, camera request → `cameraFailed` (`error_permission_denied`) → friendly fallback to manual upload. Real capture to be verified on a phone.

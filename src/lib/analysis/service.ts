@@ -7,7 +7,7 @@ import type { Measurements } from "@/lib/hair/measurements";
 import { newId, sha256 } from "@/lib/security";
 import { getYouCamConfig, youcamConfigured } from "@/lib/youcam/config";
 import { YouCamError } from "@/lib/youcam/errors";
-import { FEATURES, mergeMeasurements, type AnalysisFeature, type View } from "@/lib/youcam/features";
+import { FEATURES, mergeMeasurements, viewsFor, type AnalysisFeature, type View } from "@/lib/youcam/features";
 import { uploadImage } from "@/lib/youcam/files";
 import { creditBalance, deleteTask, pollTask, startTask } from "@/lib/youcam/tasks";
 import { log } from "@/lib/youcam/http";
@@ -142,7 +142,7 @@ export async function createLiveAnalysis(opts: {
   };
 
   for (const feature of opts.features) {
-    const views = FEATURES[feature].views;
+    const views = viewsFor(feature, opts.photos);
     if (!views.every((v) => opts.photos[v])) {
       // The client skipped a view this detector needs; it is reported as not measured.
       await db.insert(schema.analysisTasks).values({ analysisId: id, feature, status: "error", errorCode: "missing_view", finishedAt: new Date() });
@@ -271,7 +271,8 @@ async function advance(task: typeof schema.analysisTasks.$inferSelect) {
       // YouCam's transient engine errors are free to retry; retry once.
       if (TRANSIENT.has(state.code) && task.attempts < 2) {
         const [analysis] = await db.select().from(schema.analyses).where(eq(schema.analyses.id, task.analysisId));
-        const ids = FEATURES[feature].views.map((v) => (analysis.fileIds as Record<string, string>)[v]);
+        const fileIds = analysis.fileIds as Record<string, string>;
+        const ids = viewsFor(feature, fileIds).map((v) => fileIds[v]);
         if (ids.every(Boolean)) {
           const retryId = await startTask(feature, ids);
           await db
@@ -300,7 +301,7 @@ async function advance(task: typeof schema.analysisTasks.$inferSelect) {
     const hashes = analysis.imageHashes as Partial<Record<View, string>>;
     await db
       .insert(schema.resultCache)
-      .values({ key: `${feature}:${FEATURES[feature].views.map((v) => hashes[v]).join("+")}`, raw: state.results ?? null })
+      .values({ key: `${feature}:${viewsFor(feature, hashes).map((v) => hashes[v]).join("+")}`, raw: state.results ?? null })
       .onConflictDoNothing();
 
   } catch (e) {

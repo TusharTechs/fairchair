@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { CAPTURE_STEPS, PoseIcon } from "@/components/capture-guide";
 import { Button, Card, SourceBadge, cx, type ResultSource } from "@/components/ui";
+import { captureWithCameraKit } from "@/lib/client/camera-kit";
 import { prepareImage, type Prepared } from "@/lib/client/image";
 import type { Measurements } from "@/lib/hair/measurements";
 import { VIEWS, type View } from "@/lib/youcam/features";
@@ -45,7 +46,43 @@ export function PhotoStep(props: {
       .catch(() => setLive({ live: false, reason: "unreachable" }));
   }, []);
 
+  const [guided, setGuided] = useState<{ step: number; label: string }>();
   const urls = useRef<string[]>([]);
+
+  // YouCam Camera Kit: step back (length) → three angles (type & frizz) → chin down (density).
+  async function runGuided() {
+    setLocalError(undefined);
+    const toFile = (b: Blob, name: string) => new File([b], name, { type: b.type || "image/jpeg" });
+    const add = async (view: View, file: File, size?: { width: number; height: number }) => {
+      const prepared = await prepareImage(file, { size });
+      const url = URL.createObjectURL(prepared.blob);
+      urls.current.push(url);
+      setShots((s) => ({ ...s, [view]: { ...prepared, url, file } }));
+      return prepared;
+    };
+    try {
+      setGuided({ step: 1, label: "Step back so your hair falls over your shoulders" });
+      const full = await captureWithCameraKit("hairlength");
+      if (full.length) await add("full", toFile(full[full.length - 1].blob, "full.jpg"));
+
+      setGuided({ step: 2, label: "Face the camera, then turn right and left when asked" });
+      const angles = await captureWithCameraKit("hairtype");
+      if (angles.length >= 3) {
+        const front = await add("front", toFile(angles[0].blob, "front.jpg"));
+        await add("right", toFile(angles[1].blob, "right.jpg"), front);
+        await add("left", toFile(angles[2].blob, "left.jpg"), front);
+      }
+
+      setGuided({ step: 3, label: "Lower your chin so your hairline faces the camera" });
+      const down = await captureWithCameraKit("hairdensity");
+      if (down.length) await add("down", toFile(down[down.length - 1].blob, "down.jpg"));
+    } catch (e) {
+      const message = (e as Error).message;
+      if (message !== "closed") setLocalError(message);
+    } finally {
+      setGuided(undefined);
+    }
+  }
   useEffect(() => () => urls.current.forEach((u) => URL.revokeObjectURL(u)), []);
 
   async function pick(view: View, file: File | undefined) {
@@ -111,6 +148,18 @@ export function PhotoStep(props: {
       )}
 
       <Card className="p-4 sm:p-5">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-measured/30 bg-measured-soft px-4 py-3">
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-ink">{guided ? `Step ${guided.step} of 3` : "Guided camera by YouCam"}</p>
+            <p className="text-xs text-ink-2">
+              {guided ? guided.label : "Live checks for framing, angle and light — it takes each photo for you."}
+            </p>
+          </div>
+          <Button variant="secondary" disabled={Boolean(guided)} onClick={runGuided}>
+            {guided ? "Camera open…" : "Use guided camera"}
+          </Button>
+        </div>
+        <p className="mb-3 text-xs text-muted">Or add photos yourself:</p>
         <ol className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {CAPTURE_STEPS.map((step, i) => (
             <li key={step.view}>
@@ -124,6 +173,13 @@ export function PhotoStep(props: {
             </li>
           ))}
         </ol>
+        {shots.full ? (
+          <p className="mt-3 flex items-center gap-2 text-xs text-measured">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={shots.full.url} alt="Step-back photo" className="h-10 w-8 rounded object-cover" />
+            Step-back photo for length ✓
+          </p>
+        ) : null}
         {shots.front && (sidesMissing || !shots.down) ? (
           <p className="mt-3 text-xs text-muted">
             {sidesMissing ? "Without both side views, curl pattern and frizz aren't measured. " : ""}
