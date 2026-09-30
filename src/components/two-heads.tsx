@@ -50,7 +50,7 @@ export function TwoHeads({
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={client.photo} alt={`${client.name}, AI-generated demo client`} className="h-28 w-21 shrink-0 rounded-2xl object-cover" />
               <div className="min-w-0">
-                <p className="font-display text-2xl font-bold">{client.name}</p>
+                <p className="font-display text-2xl font-normal">{client.name}</p>
                 <p className="text-sm text-muted">{client.blurb}</p>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   <SourceBadge source={client.source} recordedAt={client.recordedAt} />

@@ -2,44 +2,49 @@
 
 /* FairChair design tokens. Warm, editorial, receipt-honest. */
 :root {
-  --bg: #f6f1e9;
-  --surface: #fffdf8;
-  --surface-2: #efe7db;
-  --ink: #1c1411;
-  --ink-2: #4a3d35;
-  --muted: #76665b;
-  --line: #e3d8c9;
-  --line-strong: #cdbfad;
-  --accent: #c0502a;
-  --accent-ink: #8f3517;
-  --accent-soft: #f6dfd3;
-  --measured: #0f6a5b;
-  --measured-soft: #d9ede7;
+  /* FairChair 2.0 — "the editorial salon": warm ivory, espresso, cognac;
+     champagne used sparingly; teal is reserved for "measured by YouCam". */
+  --bg: #f6f1e8;
+  --surface: #fcf9f3;
+  --surface-2: #efe7da;
+  --ink: #1d1511;
+  --ink-2: #4b3e36;
+  --muted: #72645a;
+  --line: #e5dbcc;
+  --line-strong: #cdbda7;
+  --accent: #9b4a2c;
+  --accent-ink: #7a381f;
+  --accent-soft: #f2e2d6;
+  --gold: #b3955f;
+  --measured: #1f6b5e;
+  --measured-soft: #dcece6;
   --warn: #855000;
-  --warn-soft: #f8e7c8;
+  --warn-soft: #f6e6c8;
   --danger: #a3261b;
-  --shadow: 0 1px 0 rgb(28 20 17 / 0.04), 0 8px 24px -12px rgb(28 20 17 / 0.18);
+  --shadow: 0 1px 0 rgb(29 21 17 / 0.03), 0 18px 40px -24px rgb(29 21 17 / 0.28);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #15100d;
-    --surface: #1d1714;
-    --surface-2: #27201b;
-    --ink: #f5ede3;
-    --ink-2: #d8cabb;
-    --muted: #a8998b;
-    --line: #342a24;
-    --line-strong: #4a3d34;
-    --accent: #e0714a;
-    --accent-ink: #f29b7a;
-    --accent-soft: #3a2118;
-    --measured: #5cc3ae;
-    --measured-soft: #12322c;
+    --bg: #14100d;
+    --surface: #1c1713;
+    --surface-2: #26201b;
+    --ink: #f4ece1;
+    --ink-2: #d6c8b8;
+    --muted: #a9998a;
+    --line: #332a23;
+    --line-strong: #4a3e34;
+    --accent: #d88660;
+    --accent-ink: #eaa582;
+    --accent-soft: #3a2419;
+    --gold: #cdb382;
+    --measured: #6cc5b1;
+    --measured-soft: #12302a;
     --warn: #e9b35a;
     --warn-soft: #3a2c12;
     --danger: #f07b6f;
-    --shadow: 0 1px 0 rgb(0 0 0 / 0.3), 0 12px 28px -14px rgb(0 0 0 / 0.6);
+    --shadow: 0 1px 0 rgb(0 0 0 / 0.3), 0 18px 40px -22px rgb(0 0 0 / 0.7);
   }
 }
 
@@ -59,6 +64,7 @@
   --color-measured-soft: var(--measured-soft);
   --color-warn: var(--warn);
   --color-warn-soft: var(--warn-soft);
+  --color-gold: var(--gold);
   --color-danger: var(--danger);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -91,9 +97,22 @@ body {
 }
 
 .font-display {
-  font-family: var(--font-display), var(--font-geist-sans), serif;
+  font-family: var(--font-display), Georgia, serif;
   font-optical-sizing: auto;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
+  font-weight: 450;
+}
+
+/* Editorial eyebrow / chapter numerals */
+.numeral {
+  font-family: var(--font-display), Georgia, serif;
+  font-style: italic;
+  font-feature-settings: "lnum";
+}
+
+/* Grain-free soft vignette used behind portraits */
+.portrait-frame {
+  background: radial-gradient(120% 90% at 50% 0%, var(--surface) 0%, var(--surface-2) 100%);
 }
 
 .tabular {
@@ -131,4 +150,20 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .rise, .scanline { animation: none; }
   * { scroll-behavior: auto !important; transition: none !important; }
+}
+
+@keyframes nudge {
+  0%, 100% { transform: translate(-50%, -50%); }
+  45% { transform: translate(calc(-50% + 6px), -50%); }
+  55% { transform: translate(calc(-50% - 6px), -50%); }
+}
+
+@keyframes draw {
+  from { stroke-dashoffset: var(--len, 200); }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
 }

@@ -32,7 +32,7 @@ export function QuoteReceipt({
     <div className={cx("overflow-hidden rounded-2xl border border-line bg-surface shadow-card", className)}>
       <div className="px-5 pb-4 pt-5 sm:px-6">
         {studioName ? <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted">{studioName}</p> : null}
-        <h3 className="mt-1 font-display text-xl font-bold">{service.name}</h3>
+        <h3 className="mt-1 font-display text-xl font-normal">{service.name}</h3>
         {opts ? <p className="text-sm text-muted">{opts}</p> : null}
       </div>
 
@@ -84,11 +84,11 @@ export function QuoteReceipt({
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
           <div>
             <p className="text-xs uppercase tracking-[0.14em] text-muted">Your price</p>
-            <p className="tabular whitespace-nowrap font-display text-3xl font-extrabold">{moneyRange(quote.price, currency)}</p>
+            <p className="tabular whitespace-nowrap font-display text-3xl font-normal">{moneyRange(quote.price, currency)}</p>
           </div>
           <div className="sm:text-right">
             <p className="text-xs uppercase tracking-[0.14em] text-muted">Chair time</p>
-            <p className="tabular font-display text-xl font-bold">{durationRange(quote.minutes)}</p>
+            <p className="tabular font-display text-xl font-normal">{durationRange(quote.minutes)}</p>
           </div>
         </div>
         <p className="mt-3 text-sm text-ink-2">

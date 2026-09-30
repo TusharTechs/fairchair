@@ -24,7 +24,7 @@ export function ShopForm() {
     return (
       <section className="rise flex flex-col gap-5">
         <Eyebrow>Connected</Eyebrow>
-        <h1 className="font-display text-3xl font-extrabold">{created.product.title}</h1>
+        <h1 className="font-display text-3xl font-normal">{created.product.title}</h1>
         <p className="text-ink-2">
           Read {created.product.variants} variants with options <strong>{detected.join(" · ") || "none"}</strong> straight from your storefront.
           {missing.length ? ` Tip: an option named Texture, Length or Color lets FairChair match more precisely.` : ""}
@@ -62,7 +62,7 @@ export function ShopForm() {
     <section className="rise flex flex-col gap-6">
       <div>
         <Eyebrow>For hair-extension & wig stores</Eyebrow>
-        <h1 className="mt-2 font-display text-3xl font-extrabold">Add “Find my match” to your store</h1>
+        <h1 className="mt-2 font-display text-3xl font-normal">Add “Find my match” to your store</h1>
         <p className="mt-2 text-ink-2">
           Shoppers take four selfies; YouCam Hair AI measures texture, fullness and length; FairChair picks the right variant and pack count from
           your own product and sends them to your Shopify checkout. Opened hair can&apos;t be returned — so fewer wrong orders matter.

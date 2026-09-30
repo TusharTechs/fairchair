@@ -1,24 +1,12 @@
 import Link from "next/link";
+import { Wordmark as Logo } from "./brand";
 import type { ComponentProps, ReactNode } from "react";
 
 export function cx(...parts: (string | false | null | undefined)[]) {
   return parts.filter(Boolean).join(" ");
 }
 
-export function Logo({ className }: { className?: string }) {
-  return (
-    <Link href="/" className={cx("inline-flex items-center gap-2 font-display text-[1.15rem] font-bold text-ink", className)}>
-      <svg viewBox="0 0 64 64" className="h-7 w-7" aria-hidden>
-        <rect width="64" height="64" rx="16" fill="var(--accent)" />
-        <path d="M22 14h20a4 4 0 0 1 4 4v14H18V18a4 4 0 0 1 4-4Z" fill="var(--surface)" />
-        <rect x="14" y="32" width="36" height="8" rx="4" fill="var(--surface)" />
-        <path d="M30 40h4v8h-4z" fill="var(--surface)" />
-        <rect x="20" y="48" width="24" height="4" rx="2" fill="var(--surface)" />
-      </svg>
-      FairChair
-    </Link>
-  );
-}
+export { Wordmark as Logo } from "./brand";
 
 type ButtonProps = { variant?: "primary" | "secondary" | "ghost" | "inverse" | "ghost-inverse"; size?: "md" | "lg" };
 
@@ -94,11 +82,36 @@ export function SourceBadge({ source, recordedAt }: { source: ResultSource; reco
 
 export function SiteHeader({ right }: { right?: ReactNode }) {
   return (
-    <header className="sticky top-0 z-30 border-b border-line/70 bg-bg/85 backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
+    <header className="sticky top-0 z-30 border-b border-line/60 bg-bg/85 backdrop-blur-md">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <Logo />
-        <nav className="flex items-center gap-1 text-sm">{right}</nav>
+        <nav aria-label="Primary" className="flex items-center gap-1 text-sm">
+          {right ?? (
+            <>
+              <span className="hidden items-center gap-1 md:flex">
+                <HeaderLink href="/#how">How it works</HeaderLink>
+                <HeaderLink href="/compare">Two heads</HeaderLink>
+                <HeaderLink href="/#stores">For stores</HeaderLink>
+                <HeaderLink href="/start">For stylists</HeaderLink>
+              </span>
+              <ButtonLink href="/s/amara-braids-demo" className="ml-1">
+                Get a quote
+              </ButtonLink>
+            </>
+          )}
+        </nav>
       </div>
     </header>
+  );
+}
+
+function HeaderLink({ href, children }: { href: string; children: ReactNode }) {
+  return (
+    <Link
+      href={href}
+      className="relative rounded-full px-3 py-2 text-ink-2 transition-colors hover:text-ink after:absolute after:inset-x-3 after:bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-ink after:transition-transform after:duration-300 hover:after:scale-x-100"
+    >
+      {children}
+    </Link>
   );
 }

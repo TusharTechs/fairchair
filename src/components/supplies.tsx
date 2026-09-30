@@ -12,7 +12,7 @@ export function SupplyList({ supplies }: { supplies: Supply[] }) {
             {s.because ? <p className="mt-0.5 font-mono text-[0.7rem] text-muted">{s.because}</p> : null}
           </div>
           {s.quantity ? (
-            <p className="tabular shrink-0 font-display text-lg font-bold">
+            <p className="tabular shrink-0 font-display text-lg font-normal">
               {s.quantity[0] === s.quantity[1] ? s.quantity[0] : `${s.quantity[0]}–${s.quantity[1]}`}
               <span className="ml-1 text-xs font-medium text-muted">{s.unit}</span>
             </p>

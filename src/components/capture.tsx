@@ -143,7 +143,7 @@ export function PhotoStep(props: {
         <button type="button" onClick={props.onBack} className="text-sm text-muted hover:text-ink">
           ← {props.backLabel ?? "Change style"}
         </button>
-        <h1 className="mt-2 font-display text-3xl font-extrabold leading-tight">Four quick selfies. That&apos;s the consult.</h1>
+        <h1 className="mt-2 font-display text-3xl font-normal leading-tight">Four quick selfies. That&apos;s the consult.</h1>
         <p className="mt-2 text-ink-2">
           Wear your hair loose — out of braids, a bun or a wrap. Stand facing a window or a light. Each angle feeds a different YouCam hair measurement.
         </p>
@@ -248,7 +248,7 @@ export function PhotoStep(props: {
                 <img src={d.photo} alt="" className="h-16 w-12 shrink-0 rounded-lg object-cover" />
               ) : null}
               <span className="min-w-0">
-                <span className="block font-display text-lg font-bold">{d.name}</span>
+                <span className="block font-display text-lg font-normal">{d.name}</span>
                 <span className="block text-sm text-ink-2">{d.blurb}</span>
                 <span className="mt-1.5 block">
                   <SourceBadge source={d.source} recordedAt={d.recordedAt} />
@@ -332,7 +332,7 @@ export function Analysing({ analysis }: { analysis?: AnalysisView }) {
         </svg>
       </div>
       <div>
-        <h1 className="font-display text-2xl font-extrabold">Measuring your hair</h1>
+        <h1 className="font-display text-2xl font-normal">Measuring your hair</h1>
         <p className="mt-1 text-ink-2">Each measurement is a separate YouCam analysis. This usually takes a few seconds.</p>
       </div>
       <ul className="w-full max-w-sm divide-y divide-line rounded-2xl border border-line bg-surface text-left">

@@ -199,7 +199,7 @@ function ServiceStep(props: {
     <section className="rise flex flex-col gap-5">
       <div>
         <Eyebrow>{props.studio.name}</Eyebrow>
-        <h1 className="mt-2 font-display text-3xl font-extrabold leading-tight">What are you booking?</h1>
+        <h1 className="mt-2 font-display text-3xl font-normal leading-tight">What are you booking?</h1>
         <p className="mt-2 text-ink-2">You&apos;ll get a real price and time for your hair — not a “starting at”.</p>
       </div>
       <div className="grid gap-3">
@@ -214,7 +214,7 @@ function ServiceStep(props: {
               s.id === props.serviceId ? "border-ink ring-1 ring-ink" : "border-line hover:border-line-strong",
             )}
           >
-            <p className="font-display text-lg font-bold">{s.name}</p>
+            <p className="font-display text-lg font-normal">{s.name}</p>
             <p className="text-sm text-ink-2">{s.blurb}</p>
           </button>
         ))}
@@ -270,7 +270,7 @@ function ResultStep(props: {
   return (
     <section className="rise flex flex-col gap-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-display text-3xl font-extrabold leading-tight">Your hair, measured</h1>
+        <h1 className="font-display text-3xl font-normal leading-tight">Your hair, measured</h1>
         <SourceBadge source={props.analysis.source} />
       </div>
 
@@ -486,7 +486,7 @@ function BookStep(props: {
   return (
     <section className="rise flex flex-col gap-5">
       <div>
-        <h1 className="font-display text-3xl font-extrabold leading-tight">Pick a start time</h1>
+        <h1 className="font-display text-3xl font-normal leading-tight">Pick a start time</h1>
         <p className="mt-2 text-ink-2">
           Only times that fit your full <strong>{duration(props.slotMinutes)}</strong> appointment are shown. Times are studio time ({zoneName}).
         </p>
@@ -507,7 +507,7 @@ function BookStep(props: {
             )}
           >
             <span className="text-xs opacity-75">{formatInZone(d.noon, "UTC", { weekday: "short" })}</span>
-            <span className="font-display text-lg font-bold">{d.day}</span>
+            <span className="font-display text-lg font-normal">{d.day}</span>
           </button>
         ))}
       </div>

@@ -38,7 +38,7 @@ export default async function ReceiptPage(props: PageProps<"/q/[id]">) {
       <main className="mx-auto w-full max-w-2xl flex-1 px-4 pb-20 pt-8 sm:px-6">
         <div className="rise">
           <Eyebrow>{q.status === "booked" ? "Requested" : q.status === "completed" ? "Completed" : "Quote held"}</Eyebrow>
-          <h1 className="mt-2 font-display text-3xl font-extrabold leading-tight">
+          <h1 className="mt-2 font-display text-3xl font-normal leading-tight">
             {q.clientName ? `${q.clientName}, here's your quote` : "Your quote"}
           </h1>
           {start ? (

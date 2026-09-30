@@ -79,7 +79,7 @@ export function MatchFlow({ shop, demos }: { shop: ShopView; demos: Demo[] }) {
         <section className="rise flex flex-col gap-5">
           <div>
             <Eyebrow>{shop.name}</Eyebrow>
-            <h1 className="mt-2 font-display text-3xl font-extrabold leading-tight">Find your match</h1>
+            <h1 className="mt-2 font-display text-3xl font-normal leading-tight">Find your match</h1>
             <p className="mt-2 text-ink-2">
               Opened hair can&apos;t be returned. Four selfies tell us your texture, fullness and length, so you order the right{" "}
               {shop.product.title.toLowerCase()} the first time.
@@ -175,7 +175,7 @@ function Result({
   return (
     <section className="rise flex flex-col gap-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-display text-3xl font-extrabold leading-tight">Your match</h1>
+        <h1 className="font-display text-3xl font-normal leading-tight">Your match</h1>
         <SourceBadge source={analysis.source} />
       </div>
 
@@ -193,7 +193,7 @@ function Result({
         <Card className="overflow-hidden">
           <div className="p-5">
             <Eyebrow>{shop.product.title}</Eyebrow>
-            <p className="mt-1 font-display text-2xl font-bold">{variant.title}</p>
+            <p className="mt-1 font-display text-2xl font-normal">{variant.title}</p>
             <p className="tabular mt-1 text-ink-2">
               {match.quantity} × {money(variant.price / 100)} = <strong className="text-ink">{money((variant.price * match.quantity) / 100)}</strong>
             </p>

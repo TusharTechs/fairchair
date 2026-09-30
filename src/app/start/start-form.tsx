@@ -31,7 +31,7 @@ export function StartForm() {
     return (
       <section className="rise flex flex-col gap-5">
         <Eyebrow>You&apos;re set up</Eyebrow>
-        <h1 className="font-display text-3xl font-extrabold">{name} is ready for honest quotes.</h1>
+        <h1 className="font-display text-3xl font-normal">{name} is ready for honest quotes.</h1>
         <Card className="p-5">
           <p className="text-sm font-semibold">Client link — put this in your bio</p>
           <p className="mt-2 break-all rounded-xl bg-surface-2 px-3 py-2 font-mono text-sm">{`${origin}/s/${created.slug}`}</p>
@@ -57,7 +57,7 @@ export function StartForm() {
     <section className="rise flex flex-col gap-6">
       <div>
         <Eyebrow>Three minutes</Eyebrow>
-        <h1 className="mt-2 font-display text-3xl font-extrabold">Set up your studio</h1>
+        <h1 className="mt-2 font-display text-3xl font-normal">Set up your studio</h1>
         <p className="mt-2 text-ink-2">Start from a template menu, then tune every price and minute to how you actually work.</p>
       </div>
       <Card className="flex flex-col gap-4 p-5">
@@ -98,7 +98,7 @@ export function StartForm() {
                 onClick={() => setPicked((p) => (on ? p.filter((x) => x !== id) : [...p, id]))}
                 className={cx("rounded-2xl border bg-surface p-4 text-left", on ? "border-ink ring-1 ring-ink" : "border-line hover:border-line-strong")}
               >
-                <p className="font-display font-bold">{t.name}</p>
+                <p className="font-display font-normal">{t.name}</p>
                 <p className="text-sm text-ink-2">{t.blurb}</p>
               </button>
             );

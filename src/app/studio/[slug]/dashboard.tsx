@@ -51,7 +51,7 @@ export function Dashboard({ studio, token, isDemo, quotes }: { studio: Studio; t
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <Eyebrow>{studio.city || "Your studio"}</Eyebrow>
-          <h1 className="mt-1 font-display text-3xl font-extrabold">{studio.name}</h1>
+          <h1 className="mt-1 font-display text-3xl font-normal">{studio.name}</h1>
           <p className="mt-1 text-sm text-muted">
             {money(studio.hourlyRate, studio.currency)}/hour · {Math.round(studio.depositPct * 100)}% deposit · measured time priced at your rate
           </p>
@@ -130,13 +130,13 @@ function Requests({ studio, services, quotes, token, isDemo }: { studio: Studio;
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="font-display text-lg font-bold">{q.clientName || "Client"}</p>
+                    <p className="font-display text-lg font-normal">{q.clientName || "Client"}</p>
                     <p className="truncate text-sm text-ink-2">
                       {service?.name} · {service ? optionSummary(service, q.options) : ""}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="tabular font-display text-lg font-bold">{moneyRange(q.result.price, studio.currency)}</p>
+                    <p className="tabular font-display text-lg font-normal">{moneyRange(q.result.price, studio.currency)}</p>
                     <p className="tabular text-xs text-muted">{duration(q.result.slotMinutes)} slot</p>
                   </div>
                 </div>
@@ -428,7 +428,7 @@ function ServiceEditor({
     <Card className="p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-display text-xl font-bold">{service.name}</h2>
+          <h2 className="font-display text-xl font-normal">{service.name}</h2>
           <p className="text-sm text-ink-2">{service.blurb}</p>
         </div>
         {preview ? (
@@ -676,14 +676,14 @@ function Accuracy({ services, quotes, onApply }: { services: Service[]; quotes: 
     <div className="grid gap-5 lg:grid-cols-[18rem_1fr]">
       <Card className="p-5">
         <Eyebrow>From your logged times</Eyebrow>
-        <p className="mt-3 font-display text-4xl font-extrabold tabular">{summary.n}</p>
+        <p className="mt-3 font-display text-4xl font-normal tabular">{summary.n}</p>
         <p className="text-sm text-muted">appointments logged</p>
-        <p className="mt-4 font-display text-2xl font-bold tabular">
+        <p className="mt-4 font-display text-2xl font-normal tabular">
           {summary.meanDelta >= 0 ? "+" : "−"}
           {Math.abs(Math.round(summary.meanDelta))} min
         </p>
         <p className="text-sm text-muted">average vs. estimate</p>
-        <p className="mt-4 font-display text-2xl font-bold tabular">{Math.round(summary.withinSlot * 100)}%</p>
+        <p className="mt-4 font-display text-2xl font-normal tabular">{Math.round(summary.withinSlot * 100)}%</p>
         <p className="text-sm text-muted">finished inside the reserved slot</p>
       </Card>
       <div className="flex flex-col gap-3">
@@ -772,7 +772,7 @@ function Share({ studio, token, isDemo }: { studio: Studio; token: string; isDem
 function Empty({ title, body, action }: { title: string; body: string; action?: { href: string; label: string } }) {
   return (
     <Card className="flex flex-col items-start gap-3 p-8">
-      <h2 className="font-display text-2xl font-bold">{title}</h2>
+      <h2 className="font-display text-2xl font-normal">{title}</h2>
       <p className="max-w-xl text-ink-2">{body}</p>
       {action ? (
         <a href={action.href} className="text-sm font-semibold text-accent-ink underline underline-offset-2">
