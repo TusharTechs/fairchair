@@ -112,29 +112,45 @@ const CAMERA_ERRORS: Record<string, string> = {
   error_resolution_unsupported: "This camera's resolution isn't supported. Upload photos instead.",
 };
 
-/** Opens YouCam's guided camera in `mode` (full screen) and resolves with the captured phases. */
+/**
+ * Opens YouCam's guided camera in `mode` (full screen) and resolves with the
+ * captured phases — only after the SDK has fully closed, so its `closed` event
+ * can't leak into the next session and cancel it.
+ */
 export async function captureWithCameraKit(mode: CameraMode, ui: { step: string; label: string }): Promise<Captured[]> {
   const ymk = await loadCameraKit();
+  // Let any previous session finish tearing down before opening a new one.
+  await new Promise((r) => setTimeout(r, 250));
   return new Promise<Captured[]>((resolve, reject) => {
     const ids: number[] = [];
     let settled = false;
+    let captured: Captured[] | undefined;
+    let closeTimer: number | undefined;
     const finish = (fn: () => void) => {
       if (settled) return;
       settled = true;
+      window.clearTimeout(closeTimer);
       ids.splice(0).forEach((id) => ymk.removeEventListener(id));
       hideOverlay();
       fn();
     };
+    // Resolve once the camera has closed (or after a safety timeout).
+    const closeThenResolve = () => {
+      ymk.close();
+      closeTimer = window.setTimeout(() => finish(() => resolve(captured ?? [])), 1500);
+    };
     ids.push(
       ymk.addEventListener("faceDetectionCaptured", async (payload) => {
-        ymk.close();
         try {
           const images = (payload as { images?: { phase?: number; image: unknown; width?: number; height?: number }[] }).images ?? [];
-          const out = await Promise.all(
-            images.map(async (img, i) => ({ phase: img.phase ?? i, blob: await toBlob(img.image), width: img.width ?? 0, height: img.height ?? 0 })),
-          );
-          finish(() => resolve(out.sort((a, b) => a.phase - b.phase)));
+          captured = (
+            await Promise.all(
+              images.map(async (img, i) => ({ phase: img.phase ?? i, blob: await toBlob(img.image), width: img.width ?? 0, height: img.height ?? 0 })),
+            )
+          ).sort((a, b) => a.phase - b.phase);
+          closeThenResolve();
         } catch (e) {
+          ymk.close();
           finish(() => reject(e));
         }
       }),
@@ -145,7 +161,12 @@ export async function captureWithCameraKit(mode: CameraMode, ui: { step: string;
         finish(() => reject(new Error(CAMERA_ERRORS[String(code)] ?? "The camera couldn't start. Upload photos instead.")));
       }),
     );
-    ids.push(ymk.addEventListener("closed", () => finish(() => reject(new Error("closed")))));
+    ids.push(
+      ymk.addEventListener("closed", () =>
+        // A close after a capture is the normal end of a step; otherwise the user cancelled.
+        finish(() => (captured ? resolve(captured) : reject(new Error("closed")))),
+      ),
+    );
 
     showOverlay(ui.step, ui.label, () => {
       ymk.close();
