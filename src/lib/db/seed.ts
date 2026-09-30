@@ -10,13 +10,19 @@ import { shops, studios } from "./schema";
 export const DEMO_STUDIO_SLUG = "amara-braids-demo";
 export const DEMO_ADMIN_TOKEN = "demo";
 
+const PORTFOLIO: Record<string, { image: string; caption: string }> = {
+  knotless: { image: "/demo/previews/ref-knotless-medium-midback.jpg", caption: "Medium knotless, mid-back" },
+  "silk-press": { image: "/demo/previews/ref-silk-press.jpg", caption: "Silk press, past the shoulders" },
+  "sew-in": { image: "/demo/previews/ref-sew-in.jpg", caption: "Body-wave sew-in with leave-out" },
+  "tape-ins": { image: "/demo/previews/ref-tape-ins.jpg", caption: "Straight tape-ins, lower chest" },
+};
+
 function demoServices() {
-  const knotless = createService("knotless");
-  knotless.portfolio = {
-    image: "/demo/previews/ref-knotless-medium-midback.jpg",
-    caption: "Medium knotless, mid-back — from the studio's portfolio (AI-generated for the demo)",
-  };
-  return [knotless, createService("silk-press"), createService("sew-in"), createService("tape-ins")];
+  return (["knotless", "silk-press", "sew-in", "tape-ins"] as const).map((t) => {
+    const s = createService(t);
+    const p = PORTFOLIO[t];
+    return { ...s, portfolio: { image: p.image, caption: `${p.caption} — from the studio's portfolio (AI-generated for the demo)` } };
+  });
 }
 
 export async function ensureDemoStudio(db: DB) {

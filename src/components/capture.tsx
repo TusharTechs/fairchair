@@ -321,38 +321,60 @@ const DECIDES: Record<string, string> = {
   "hair-color": "Suggests a colour family",
 };
 
-export function Analysing({ analysis }: { analysis?: AnalysisView }) {
+export function Analysing({ analysis, portrait }: { analysis?: AnalysisView; portrait?: string }) {
   const tasks = analysis?.tasks ?? [];
+  const m = analysis?.measurements ?? {};
+  const value: Record<string, string | undefined> = {
+    "hair-type": m.type ? m.type.mapping.replace(" to ", "–").toUpperCase() : undefined,
+    "hair-density": m.density ? `${m.density.value.toFixed(2)} / 3` : undefined,
+    "hair-length": m.length ? m.length.term : undefined,
+    "hair-frizz": m.frizz ? m.frizz.term : undefined,
+  };
+  const done = tasks.filter((t) => t.status !== "running").length;
   return (
-    <section className="rise flex flex-col items-center gap-6 py-6 text-center" aria-live="polite">
-      <div className="relative h-28 w-28 overflow-hidden rounded-3xl border border-line bg-surface">
-        <div className="scanline absolute inset-x-0 h-1/2 bg-gradient-to-b from-transparent via-measured/25 to-transparent" />
-        <svg viewBox="0 0 64 64" className="absolute inset-0 m-auto h-14 w-14 text-measured" aria-hidden>
-          <path d="M8 32h10l6-14 8 28 8-20 6 6h10" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
+    <section className="rise grid items-center gap-8 py-2 md:grid-cols-[0.9fr_1.1fr]" aria-live="polite">
+      <div className="relative mx-auto w-full max-w-xs overflow-hidden rounded-[1.75rem] bg-surface-2 shadow-card">
+        {portrait ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={portrait} alt="Your photo being measured" className="aspect-[4/5] w-full object-cover" />
+        ) : (
+          <div className="aspect-[4/5] w-full" />
+        )}
+        <div className="scanline pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-transparent via-measured/30 to-transparent" />
+        <div className="absolute inset-x-3 bottom-3 flex flex-wrap gap-1.5">
+          {tasks
+            .filter((t) => t.status === "success" && value[t.feature])
+            .map((t) => (
+              <span key={t.feature} className="rounded-full bg-surface/92 px-2.5 py-1 text-[0.68rem] font-medium text-measured shadow-card motion-safe:animate-[fade-up_500ms_var(--ease-out)_both]">
+                {t.label.replace("Hair ", "")} · {value[t.feature]}
+              </span>
+            ))}
+        </div>
       </div>
       <div>
-        <h1 className="font-display text-2xl font-normal">Measuring your hair</h1>
-        <p className="mt-1 text-ink-2">Each measurement is a separate YouCam analysis. This usually takes a few seconds.</p>
+        <p className="numeral text-xl text-accent-ink">
+          {done} of {tasks.length || 4}
+        </p>
+        <h1 className="mt-1 font-display text-4xl leading-tight">Measuring your hair</h1>
+        <p className="mt-2 text-ink-2">Each measurement is its own YouCam analysis, running in parallel. Usually 10–20 seconds.</p>
+        <ul className="mt-6 divide-y divide-line border-y border-line">
+          {(tasks.length ? tasks : [{ feature: "…", label: "Uploading your photos", status: "running", errorCode: null, cached: false } as TaskView]).map((t) => (
+            <li key={t.feature} className="flex items-center justify-between gap-3 py-3.5 text-sm">
+              <span className="min-w-0">
+                <span className="block font-medium">{t.label}</span>
+                {DECIDES[t.feature] ? <span className="block text-xs text-muted">{DECIDES[t.feature]}</span> : null}
+              </span>
+              <span className={cx("shrink-0 font-mono text-xs", t.status === "success" ? "text-measured" : t.status === "error" ? "text-danger" : "text-muted")}>
+                {t.status === "success" ? (value[t.feature] ?? "✓") : t.status === "error" ? "couldn't read" : (
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-measured" /> measuring
+                  </span>
+                )}
+              </span>
+            </li>
+          ))}
+        </ul>
       </div>
-      <ul className="w-full max-w-sm divide-y divide-line rounded-2xl border border-line bg-surface text-left">
-        {(tasks.length ? tasks : [{ feature: "…", label: "Uploading photos", status: "running", errorCode: null, cached: false } as TaskView]).map((t) => (
-          <li key={t.feature} className="flex items-center justify-between gap-3 px-4 py-3 text-sm">
-            <span className="min-w-0">
-              <span className="block font-medium">{t.label}</span>
-              {DECIDES[t.feature] ? <span className="block text-xs text-muted">{DECIDES[t.feature]}</span> : null}
-            </span>
-            <span
-              className={cx(
-                "font-mono text-xs",
-                t.status === "success" ? "text-measured" : t.status === "error" ? "text-danger" : "text-muted",
-              )}
-            >
-              {t.status === "success" ? (t.cached ? "✓ reused" : "✓ done") : t.status === "error" ? "couldn't read" : "measuring…"}
-            </span>
-          </li>
-        ))}
-      </ul>
     </section>
   );
 }

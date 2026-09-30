@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Analysing, PhotoStep, type AnalysisView, type Demo } from "@/components/capture";
+import { BeforeAfter } from "@/components/before-after";
 import { HairCard } from "@/components/hair-card";
 import { Button, Card, Eyebrow, MeasuredChip, SourceBadge, cx, type ResultSource } from "@/components/ui";
 import { prepareImage } from "@/lib/client/image";
@@ -39,11 +40,16 @@ export function MatchFlow({ shop, demos }: { shop: ShopView; demos: Demo[] }) {
   const [analysis, setAnalysis] = useState<AnalysisView>();
   const [error, setError] = useState<string>();
   const [source, setSource] = useState<{ front?: Blob; demo?: string }>({});
+  const [portrait, setPortrait] = useState<string>();
 
   async function start(body: FormData) {
     const front = body.get("front");
     const demo = body.get("demo");
     setSource({ front: front instanceof Blob ? front : undefined, demo: typeof demo === "string" ? demo : undefined });
+    setPortrait((old) => {
+      if (old?.startsWith("blob:")) URL.revokeObjectURL(old);
+      return front instanceof Blob ? URL.createObjectURL(front) : demos.find((d) => d.id === demo)?.photo;
+    });
     setError(undefined);
     setStep("analysing");
     setAnalysis(undefined);
@@ -143,10 +149,10 @@ export function MatchFlow({ shop, demos }: { shop: ShopView; demos: Demo[] }) {
         />
       )}
 
-      {step === "analysing" && <Analysing analysis={analysis} />}
+      {step === "analysing" && <Analysing analysis={analysis} portrait={portrait} />}
 
       {step === "result" && analysis && desired && colour && (
-        <Result shop={shop} analysis={analysis} desired={desired} colour={colour} source={source} onRetake={() => setStep("photos")} />
+        <Result shop={shop} analysis={analysis} desired={desired} colour={colour} source={source} portrait={portrait} onRetake={() => setStep("photos")} />
       )}
     </div>
   );
@@ -158,6 +164,7 @@ function Result({
   desired,
   colour,
   source,
+  portrait,
   onRetake,
 }: {
   shop: ShopView;
@@ -165,6 +172,7 @@ function Result({
   desired: number;
   colour: ColourFamily;
   source: { front?: Blob; demo?: string };
+  portrait?: string;
   onRetake: () => void;
 }) {
   const match = useMemo(() => matchExtensions(shop.product, analysis.measurements, desired, shop.settings, colour), [shop, analysis, desired, colour]);
@@ -266,12 +274,22 @@ function Result({
         <Card className="p-5 text-sm text-ink-2">No variant of this product fits your hair. {match.warnings.join(" ")}</Card>
       )}
 
-      {source.front || source.demo ? <ExtensionTryOn shop={shop} source={source} template={match.tryOnTemplate} /> : null}
+      {source.front || source.demo ? <ExtensionTryOn shop={shop} source={source} portrait={portrait} template={match.tryOnTemplate} /> : null}
     </section>
   );
 }
 
-function ExtensionTryOn({ shop, source, template }: { shop: ShopView; source: { front?: Blob; demo?: string }; template: string }) {
+function ExtensionTryOn({
+  shop,
+  source,
+  portrait,
+  template,
+}: {
+  shop: ShopView;
+  source: { front?: Blob; demo?: string };
+  portrait?: string;
+  template: string;
+}) {
   const [state, setState] = useState<{ kind: "idle" } | { kind: "loading" } | { kind: "done"; image: string; source: ResultSource } | { kind: "error"; message: string }>({
     kind: "idle",
   });
@@ -284,28 +302,57 @@ function ExtensionTryOn({ shop, source, template }: { shop: ShopView; source: { 
     else if (source.front) fd.append("front", (await prepareImage(source.front, { maxSide: 1024 })).blob, "front.jpg");
     const res = await fetch("/api/tryon-ext", { method: "POST", body: fd });
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) return setState({ kind: "error", message: data?.error?.message ?? "The preview couldn't be made." });
+    if (!res.ok) return setState({ kind: "error", message: data?.error?.message ?? "The preview couldn't be made. Try again in a moment." });
     setState({ kind: "done", image: data.image, source: data.source });
   }
   return (
-    <Card className="p-5">
-      <div className="flex items-center justify-between">
-        <Eyebrow>See it blended into your hair</Eyebrow>
+    <Card className="overflow-hidden">
+      <div className="flex items-start justify-between gap-3 px-5 pt-5">
+        <div>
+          <Eyebrow>See it blended into your hair</Eyebrow>
+          <p className="mt-1 font-display text-2xl">Your hair, with extensions</p>
+        </div>
         {state.kind === "done" ? <SourceBadge source={state.source} /> : null}
       </div>
-      <div className="mt-3 aspect-[3/4] max-h-[28rem] overflow-hidden rounded-xl border border-dashed border-line-strong bg-surface-2">
-        {state.kind === "done" ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={state.image} alt="Extensions previewed on you" className="h-full w-full object-cover" />
+      <div className="p-5">
+        {state.kind === "done" && portrait ? (
+          <BeforeAfter
+            className="aspect-[4/5] max-h-[34rem] rounded-xl"
+            before={{ src: portrait, alt: "Your hair today", label: "Today" }}
+            after={{ src: state.image, alt: "Your hair with extensions (preview)", label: "With extensions" }}
+          />
         ) : (
-          <button type="button" disabled={state.kind === "loading"} onClick={run} className="flex h-full w-full flex-col items-center justify-center gap-1 p-4 text-center">
-            <span className="text-sm font-semibold">{state.kind === "loading" ? "Adding length…" : "Preview extensions on me"}</span>
-            <span className="text-xs text-muted">YouCam hair extension try-on · keeps your own texture</span>
-          </button>
+          <div className="relative aspect-[4/5] max-h-[34rem] overflow-hidden rounded-xl bg-surface-2">
+            {portrait ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={state.kind === "done" ? state.image : portrait} alt="Your photo" className="h-full w-full object-cover" />
+            ) : null}
+            {state.kind === "loading" ? (
+              <div className="absolute inset-0 flex flex-col items-center justify-end gap-1 bg-gradient-to-t from-ink/70 to-transparent p-5 text-center text-surface">
+                <div className="scanline absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-transparent via-surface/25 to-transparent" />
+                <span className="font-display text-xl">Adding length…</span>
+                <span className="text-xs text-surface/80">YouCam hair extension try-on · about 10 seconds</span>
+              </div>
+            ) : state.kind !== "done" ? (
+              <button type="button" onClick={run} className="absolute inset-0 flex flex-col items-center justify-end gap-1 bg-gradient-to-t from-ink/60 via-transparent p-5 text-center text-surface">
+                <span className="font-display text-2xl">Preview extensions on me</span>
+                <span className="text-xs text-surface/85">Keeps your own texture · the result isn&apos;t saved</span>
+              </button>
+            ) : null}
+          </div>
         )}
       </div>
-      {state.kind === "done" ? <p className="mt-2 text-xs text-muted">A preview of added length and fullness, not the exact product. Not saved.</p> : null}
-      {state.kind === "error" ? <p className="mt-2 text-sm text-danger">{state.message}</p> : null}
+      {state.kind === "done" ? (
+        <p className="border-t border-line px-5 py-3 text-xs text-muted">A preview of added length and fullness, not the exact product. Drag to compare. Not saved.</p>
+      ) : null}
+      {state.kind === "error" ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-5 py-3">
+          <p className="text-sm text-danger">{state.message}</p>
+          <Button variant="secondary" onClick={run}>
+            Try again
+          </Button>
+        </div>
+      ) : null}
     </Card>
   );
 }

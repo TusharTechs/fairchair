@@ -1,13 +1,16 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { useEffect, useMemo, useState } from "react";
+import { BeforeAfter } from "@/components/before-after";
+import { Mark } from "@/components/brand";
 import { HairCard } from "@/components/hair-card";
 import { QuoteReceipt } from "@/components/quote-receipt";
 import { SupplyList } from "@/components/supplies";
 import { Button, Card, Eyebrow, MeasuredChip, SourceBadge, cx, type ResultSource } from "@/components/ui";
 import { Analysing, PhotoStep, type AnalysisView, type Demo } from "@/components/capture";
-import { duration } from "@/lib/format";
+import { duration, durationRange, money, moneyRange } from "@/lib/format";
 import { formatInZone, zonedDate, zonedToUtc } from "@/lib/time";
 import { HAIR_LENGTH_BANDS, LENGTH_TIERS, type LengthTier } from "@/lib/hair/measurements";
 import { quote as computeQuote } from "@/lib/pricing/engine";
@@ -27,6 +30,14 @@ export function QuoteFlow({ studio, demos }: { studio: Studio; demos: Demo[] }) 
   const [quoteId, setQuoteId] = useState<string>();
   // What the try-on needs: the front photo (kept in memory only) or the demo id.
   const [tryOnSource, setTryOnSource] = useState<{ front?: Blob; demo?: string }>({});
+  // The client's own photo (or the demo client's), shown while measuring and in the try-on.
+  const [portrait, setPortrait] = useState<string>();
+  const reduce = useReducedMotion();
+
+  // Each chapter starts at the top of the screen (matters on phones).
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+  }, [step, reduce]);
 
   const service = studio.services.find((s) => s.id === serviceId);
   const optionsComplete = service ? service.axes.every((a) => options[a.id]) : false;
@@ -44,6 +55,10 @@ export function QuoteFlow({ studio, demos }: { studio: Studio; demos: Demo[] }) 
     const front = body.get("front");
     const demo = body.get("demo");
     setTryOnSource({ front: front instanceof Blob ? front : undefined, demo: typeof demo === "string" ? demo : undefined });
+    setPortrait((old) => {
+      if (old?.startsWith("blob:")) URL.revokeObjectURL(old);
+      return front instanceof Blob ? URL.createObjectURL(front) : demos.find((d) => d.id === demo)?.photo;
+    });
     setError(undefined);
     setStep("analysing");
     setAnalysis(undefined);
@@ -81,8 +96,16 @@ export function QuoteFlow({ studio, demos }: { studio: Studio; demos: Demo[] }) 
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <Progress step={step} />
+    <div className="flex flex-col gap-8">
+      <Chapters step={step} />
+      <AnimatePresence mode="wait" initial={false}>
+      <motion.div
+        key={step}
+        initial={reduce ? false : { opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={reduce ? undefined : { opacity: 0, y: -8 }}
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+      >
 
       {step === "service" && (
         <ServiceStep
@@ -110,7 +133,7 @@ export function QuoteFlow({ studio, demos }: { studio: Studio; demos: Demo[] }) 
         />
       )}
 
-      {step === "analysing" && <Analysing analysis={analysis} />}
+      {step === "analysing" && <Analysing analysis={analysis} portrait={portrait} />}
 
       {step === "result" && service && analysis && preview && (
         <ResultStep
@@ -120,6 +143,7 @@ export function QuoteFlow({ studio, demos }: { studio: Studio; demos: Demo[] }) 
           quote={preview}
           stretched={options.stretched}
           tryOnSource={tryOnSource}
+          portrait={portrait}
           onStretched={(tier) => setOptions((o) => ({ ...o, stretched: tier }))}
           onRetake={() => {
             setAnalysis(undefined);
@@ -157,6 +181,8 @@ export function QuoteFlow({ studio, demos }: { studio: Studio; demos: Demo[] }) 
           onSkip={() => router.push(`/q/${quoteId}`)}
         />
       )}
+      </motion.div>
+      </AnimatePresence>
     </div>
   );
 }
@@ -165,23 +191,27 @@ export function QuoteFlow({ studio, demos }: { studio: Studio; demos: Demo[] }) 
 
 const STEPS: { id: Step; label: string }[] = [
   { id: "service", label: "Style" },
-  { id: "photos", label: "Photos" },
+  { id: "photos", label: "You" },
   { id: "analysing", label: "Measure" },
-  { id: "result", label: "Quote" },
+  { id: "result", label: "Your quote" },
   { id: "book", label: "Book" },
 ];
 
-function Progress({ step }: { step: Step }) {
+/** Editorial chapter navigation: numerals, the current chapter in italic. */
+function Chapters({ step }: { step: Step }) {
   const at = STEPS.findIndex((s) => s.id === step);
   return (
-    <ol className="flex items-center gap-2" aria-label="Progress">
-      {STEPS.map((s, i) => (
-        <li key={s.id} className="flex flex-1 flex-col gap-1.5" aria-current={i === at ? "step" : undefined}>
-          <span className={cx("h-1 rounded-full", i <= at ? "bg-accent" : "bg-line")} />
-          <span className={cx("text-[0.7rem] font-medium", i === at ? "text-ink" : "text-muted")}>{s.label}</span>
-        </li>
-      ))}
-    </ol>
+    <nav aria-label="Quote progress">
+      <ol className="flex items-baseline gap-4 overflow-x-auto border-b border-line pb-3 sm:gap-6">
+        {STEPS.map((s, i) => (
+          <li key={s.id} aria-current={i === at ? "step" : undefined} className={cx("flex shrink-0 items-baseline gap-1.5", i === at ? "text-ink" : i < at ? "text-ink-2" : "text-muted")}>
+            <span className="numeral text-sm">{String(i + 1).padStart(2, "0")}</span>
+            <span className={cx("text-sm", i === at ? "font-display text-lg italic" : "hidden sm:inline")}>{s.label}</span>
+            {i < at ? <span className="sr-only">(done)</span> : null}
+          </li>
+        ))}
+      </ol>
+    </nav>
   );
 }
 
@@ -199,25 +229,46 @@ function ServiceStep(props: {
     <section className="rise flex flex-col gap-5">
       <div>
         <Eyebrow>{props.studio.name}</Eyebrow>
-        <h1 className="mt-2 font-display text-3xl font-normal leading-tight">What are you booking?</h1>
-        <p className="mt-2 text-ink-2">You&apos;ll get a real price and time for your hair — not a “starting at”.</p>
+        <h1 className="mt-2 font-display text-4xl leading-tight">What are you booking?</h1>
+        <p className="mt-2 text-ink-2">Pick a style. After four selfies you&apos;ll get a real price and time for <em>your</em> hair — not a “starting at”.</p>
       </div>
-      <div className="grid gap-3">
-        {props.studio.services.map((s) => (
-          <button
-            key={s.id}
-            type="button"
-            onClick={() => props.onService(s.id)}
-            aria-pressed={s.id === props.serviceId}
-            className={cx(
-              "rounded-2xl border bg-surface p-4 text-left transition-colors",
-              s.id === props.serviceId ? "border-ink ring-1 ring-ink" : "border-line hover:border-line-strong",
-            )}
-          >
-            <p className="font-display text-lg font-normal">{s.name}</p>
-            <p className="text-sm text-ink-2">{s.blurb}</p>
-          </button>
-        ))}
+      <div className="grid gap-3 sm:grid-cols-2">
+        {props.studio.services.map((s) => {
+          const from = Math.min(...Object.values(s.basePrice));
+          const mins = Math.min(...Object.values(s.baseMinutes));
+          const on = s.id === props.serviceId;
+          return (
+            <button
+              key={s.id}
+              type="button"
+              onClick={() => props.onService(s.id)}
+              aria-pressed={on}
+              className={cx(
+                "group flex gap-4 overflow-hidden rounded-2xl border bg-surface p-3 text-left transition-all duration-300",
+                on ? "border-ink shadow-card ring-1 ring-ink" : "border-line hover:-translate-y-0.5 hover:border-line-strong hover:shadow-card",
+              )}
+            >
+              <span className="relative h-24 w-20 shrink-0 overflow-hidden rounded-xl bg-surface-2">
+                {s.portfolio ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={s.portfolio.image} alt="" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                ) : (
+                  <span className="flex h-full flex-col items-center justify-center gap-1 bg-gradient-to-b from-surface-2 to-line/60">
+                    <Mark tile={false} className="h-8 w-8 text-ink/35" />
+                  </span>
+                )}
+              </span>
+              <span className="min-w-0 py-1">
+                <span className="block font-display text-xl leading-tight">{s.name}</span>
+                <span className="mt-1 block text-sm text-ink-2">{s.blurb}</span>
+                <span className="mt-2 block text-xs text-muted">
+                  from {money(from, props.studio.currency)} · {duration(mins)}+
+                  {s.portfolio ? " · try it on" : ""}
+                </span>
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {service?.axes.map((axis) => (
@@ -256,6 +307,7 @@ function ResultStep(props: {
   quote: ReturnType<typeof computeQuote>;
   stretched?: LengthTier;
   tryOnSource: { front?: Blob; demo?: string };
+  portrait?: string;
   onStretched: (tier: LengthTier | undefined) => void;
   onRetake: () => void;
   onHold: (clientName: string) => Promise<void>;
@@ -268,14 +320,32 @@ function ResultStep(props: {
   const shrinks = (m.type?.family === "curly" || m.type?.family === "coily") && m.length && props.service.measures.includes("length");
 
   return (
-    <section className="rise flex flex-col gap-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-display text-3xl font-normal leading-tight">Your hair, measured</h1>
-        <SourceBadge source={props.analysis.source} />
+    <section className="flex flex-col gap-6">
+      {/* The payoff first: the honest number. */}
+      <div className="flex flex-col gap-4 rounded-[1.75rem] bg-ink p-6 text-surface sm:flex-row sm:items-end sm:justify-between sm:p-8">
+        <div>
+          <p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-surface/60">
+            {props.studio.name} · {props.service.name.toLowerCase()}
+          </p>
+          <h1 className="mt-2 font-display text-5xl leading-none tabular sm:text-6xl">{moneyRange(props.quote.price, props.studio.currency)}</h1>
+          <p className="mt-2 text-surface/75">
+            {durationRange(props.quote.minutes)} in the chair · {duration(props.quote.slotMinutes)} reserved for you
+          </p>
+        </div>
+        <div className="self-start sm:self-auto">
+          <SourceBadge source={props.analysis.source} />
+        </div>
       </div>
 
-      <Card className="p-5">
-        <HairCard measurements={props.analysis.measurements} />
+      <Card className="grid gap-5 p-5 md:grid-cols-[11rem_1fr]">
+        {props.portrait ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={props.portrait} alt="Your photo" className="hidden aspect-[4/5] w-full rounded-xl object-cover md:block" />
+        ) : null}
+        <div className="min-w-0">
+          <p className="font-display text-2xl">Your hair, measured</p>
+          <p className="mb-3 text-sm text-muted">By YouCam Hair AI from your selfies</p>
+          <HairCard measurements={props.analysis.measurements} />
         {failed.length ? (
           <div className="mt-4 rounded-xl bg-warn-soft px-4 py-3 text-sm text-ink-2">
             <p>
@@ -301,6 +371,7 @@ function ResultStep(props: {
           <Button variant="secondary" onClick={props.onRetake}>
             Retake photos
           </Button>
+        </div>
         </div>
       </Card>
 
@@ -334,7 +405,7 @@ function ResultStep(props: {
       <QuoteReceipt quote={props.quote} service={props.service} currency={props.studio.currency} studioName={props.studio.name} />
 
       {props.service.portfolio && (props.tryOnSource.front || props.tryOnSource.demo) ? (
-        <TryOn studio={props.studio} service={props.service} source={props.tryOnSource} />
+        <TryOn studio={props.studio} service={props.service} source={props.tryOnSource} portrait={props.portrait} />
       ) : null}
 
       {props.quote.supplies.length ? (
@@ -384,7 +455,17 @@ function ResultStep(props: {
   );
 }
 
-function TryOn({ studio, service, source }: { studio: Studio; service: Service; source: { front?: Blob; demo?: string } }) {
+function TryOn({
+  studio,
+  service,
+  source,
+  portrait,
+}: {
+  studio: Studio;
+  service: Service;
+  source: { front?: Blob; demo?: string };
+  portrait?: string;
+}) {
   const [state, setState] = useState<
     { kind: "idle" } | { kind: "loading" } | { kind: "done"; image: string; source: ResultSource } | { kind: "error"; message: string }
   >({ kind: "idle" });
@@ -399,50 +480,66 @@ function TryOn({ studio, service, source }: { studio: Studio; service: Service; 
     else if (source.front) fd.append("front", source.front, "front.jpg");
     const res = await fetch("/api/tryon", { method: "POST", body: fd });
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) return setState({ kind: "error", message: data?.error?.message ?? "The preview couldn't be made." });
+    if (!res.ok) return setState({ kind: "error", message: data?.error?.message ?? "The preview couldn't be made. Try again in a moment." });
     setState({ kind: "done", image: data.image, source: data.source });
   }
 
   return (
-    <Card className="p-5">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <Eyebrow>See it on you</Eyebrow>
+    <Card className="overflow-hidden">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-5 pt-5">
+        <div>
+          <Eyebrow>See it on you</Eyebrow>
+          <p className="mt-1 font-display text-2xl">{studio.name}&apos;s {service.name.toLowerCase()}, on you</p>
+        </div>
         {state.kind === "done" ? <SourceBadge source={state.source} /> : null}
       </div>
-      <div className="mt-3 grid grid-cols-2 gap-3">
-        <figure>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={portfolio.image} alt={portfolio.caption} className="aspect-[3/4] w-full rounded-xl object-cover" />
-          <figcaption className="mt-1.5 text-[0.7rem] leading-snug text-muted">{portfolio.caption}</figcaption>
-        </figure>
-        <figure>
-          <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl border border-dashed border-line-strong bg-surface-2">
-            {state.kind === "done" ? (
+
+      <div className="grid gap-4 p-5 sm:grid-cols-[1fr_9rem]">
+        {state.kind === "done" && portrait ? (
+          <BeforeAfter
+            className="aspect-[4/5] rounded-xl"
+            before={{ src: portrait, alt: "Your photo", label: "You today" }}
+            after={{ src: state.image, alt: `Preview of ${service.name.toLowerCase()} on you`, label: "Preview" }}
+          />
+        ) : (
+          <div className="relative aspect-[4/5] overflow-hidden rounded-xl bg-surface-2">
+            {portrait ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={state.image} alt="Your try-on preview" className="h-full w-full object-cover" />
-            ) : state.kind === "loading" ? (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-3 text-center">
-                <div className="scanline absolute inset-x-0 h-1/2 bg-gradient-to-b from-transparent via-measured/25 to-transparent" />
-                <span className="text-sm font-semibold">Styling your preview…</span>
-                <span className="text-xs text-muted">YouCam hair try-on · about 10 seconds</span>
+              <img src={state.kind === "done" ? state.image : portrait} alt="Your photo" className="h-full w-full object-cover" />
+            ) : null}
+            {state.kind === "loading" ? (
+              <div className="absolute inset-0 flex flex-col items-center justify-end gap-1 bg-gradient-to-t from-ink/70 to-transparent p-5 text-center text-surface">
+                <div className="scanline absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-transparent via-surface/25 to-transparent" />
+                <span className="font-display text-xl">Styling your preview…</span>
+                <span className="text-xs text-surface/80">YouCam hair try-on with the stylist&apos;s own photo · about 10 seconds</span>
               </div>
-            ) : (
-              <button type="button" onClick={run} className="flex h-full w-full flex-col items-center justify-center gap-2 p-3 text-center">
-                <span className="text-sm font-semibold">This style, on you</span>
-                <span className="text-xs text-muted">Uses your front photo</span>
+            ) : state.kind !== "done" ? (
+              <button type="button" onClick={run} className="absolute inset-0 flex flex-col items-center justify-end gap-1 bg-gradient-to-t from-ink/60 via-transparent p-5 text-center text-surface">
+                <span className="font-display text-2xl">See this style on me</span>
+                <span className="text-xs text-surface/85">Uses your front photo · the result isn&apos;t saved</span>
               </button>
-            )}
+            ) : null}
           </div>
-          <figcaption className="mt-1.5 text-[0.7rem] leading-snug text-muted">
-            {state.kind === "done" ? "A preview of the style, not a promise of the exact result. Not saved." : "Your preview appears here"}
+        )}
+        <figure className="flex flex-row gap-3 sm:flex-col">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={portfolio.image} alt={portfolio.caption} className="aspect-[3/4] w-24 rounded-lg object-cover sm:w-full" />
+          <figcaption className="text-[0.72rem] leading-snug text-muted">
+            <span className="block font-medium text-ink-2">The stylist&apos;s own work</span>
+            {portfolio.caption}
           </figcaption>
         </figure>
       </div>
-      {state.kind === "error" ? <p className="mt-3 text-sm text-danger">{state.message}</p> : null}
-      {state.kind === "idle" || state.kind === "error" ? (
-        <Button variant="secondary" className="mt-3" onClick={run}>
-          Preview {service.name.toLowerCase()} on me
-        </Button>
+      {state.kind === "done" ? (
+        <p className="border-t border-line px-5 py-3 text-xs text-muted">A preview of the style, not a promise of the exact result. Drag to compare. Not saved.</p>
+      ) : null}
+      {state.kind === "error" ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-5 py-3">
+          <p className="text-sm text-danger">{state.message}</p>
+          <Button variant="secondary" onClick={run}>
+            Try again
+          </Button>
+        </div>
       ) : null}
     </Card>
   );

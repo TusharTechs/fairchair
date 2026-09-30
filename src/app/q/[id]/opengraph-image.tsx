@@ -1,0 +1,59 @@
+import { ImageResponse } from "next/og";
+import { DENSITY_GRADES, HAIR_LENGTH_BANDS } from "@/lib/hair/measurements";
+import { durationRange, moneyRange } from "@/lib/format";
+import { getQuote } from "@/lib/quotes";
+import { studioById } from "@/lib/studios";
+
+export const runtime = "nodejs";
+export const alt = "A FairChair quote: price and chair time, measured by YouCam Hair AI";
+export const size = { width: 1200, height: 630 };
+export const contentType = "image/png";
+
+// Share card for a quote. Deliberately photo-free: studio, service, price,
+// time and the measured factors — nothing that identifies the client.
+export default async function Image({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const q = await getQuote(id);
+  const studio = q ? await studioById(q.studioId) : undefined;
+  const service = studio?.services.find((s) => s.id === q?.serviceId);
+  const m = q?.measurements;
+  const chips = [
+    m?.type ? `Curl ${m.type.mapping.replace(" to ", "–").toUpperCase()}` : null,
+    m?.density ? `Density ${DENSITY_GRADES[m.density.grade].label.toLowerCase()}` : null,
+    m?.length ? `Length ${HAIR_LENGTH_BANDS[m.length.index].label.toLowerCase()}` : null,
+  ].filter(Boolean) as string[];
+
+  return new ImageResponse(
+    (
+      <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between", background: "#f6f1e8", padding: 72, color: "#1d1511", fontFamily: "Georgia, serif" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <svg width="56" height="56" viewBox="0 0 64 64">
+            <rect width="64" height="64" rx="15" fill="#1d1511" />
+            <path d="M28.71 31.80 L28.73 31.52 L28.78 31.23 L28.85 30.94 L28.95 30.65 L29.07 30.36 L29.22 30.08 L29.39 29.81 L29.60 29.54 L29.82 29.29 L30.08 29.06 L30.35 28.84 L30.65 28.64 L30.97 28.46 L31.31 28.31 L31.66 28.18 L32.03 28.08 L32.42 28.01 L32.82 27.97 L33.22 27.96 L33.63 27.98 L34.05 28.04 L34.46 28.13 L34.87 28.26 L35.28 28.42 L35.68 28.62 L36.07 28.85 L36.44 29.11 L36.80 29.41 L37.13 29.74 L37.44 30.10 L37.73 30.50 L37.99 30.91 L38.22 31.36 L38.42 31.82 L38.57 32.31 L38.70 32.81 L38.78 33.33 L38.82 33.86 L38.82 34.40 L38.78 34.94 L38.70 35.49 L38.57 36.03 L38.39 36.57 L38.17 37.10 L37.91 37.62 L37.60 38.12 L37.26 38.60 L36.87 39.05 L36.44 39.48 L35.97 39.88 L35.47 40.24 L34.94 40.57 L34.37 40.86 L33.78 41.11 L33.17 41.31 L32.53 41.46 L31.88 41.57 L31.22 41.62 L30.54 41.62 L29.86 41.57 L29.18 41.47 L28.51 41.31 L27.84 41.09 L27.19 40.83 L26.55 40.51 L25.93 40.13 L25.34 39.71 L24.77 39.24 L24.25 38.72 L23.76 38.15 L23.31 37.55 L22.90 36.90 L22.54 36.22 L22.24 35.51 L21.99 34.77 L21.79 34.00 L21.66 33.22 L21.58 32.42 L21.57 31.61 L21.62 30.79 L21.74 29.98 L21.91 29.17 L22.16 28.37 L22.46 27.58 L22.83 26.82 L23.27 26.08 L23.76 25.37 L24.31 24.69 L24.91 24.06 L25.57 23.47 L26.28 22.92 L27.03 22.43 L27.82 22.00 L28.65 21.63 L29.52 21.32 L30.41 21.07 L31.32 20.90 L32.26 20.79 L33.20 20.76 L34.15 20.80 L35.10 20.91 L36.05 21.10 L36.99 21.37 L37.90 21.71 L38.80 22.12 L39.67 22.60 L40.50 23.15 L41.30 23.77 L42.04 24.45 L42.74 25.20 L43.38 26.00 L43.97 26.85 L44.49 27.75 L44.94 28.70 L45.31 29.68 L45.62 30.70 L45.84 31.74 L45.99 32.80 L46.05 33.88 L46.03 34.97 L45.92 36.06 L45.73 37.15 L45.46 38.22 L45.10 39.27 L44.65 40.31 L44.13 41.31 L43.53 42.27 L42.85 43.18 L42.09 44.05 L41.27 44.86 L40.38 45.61 L39.43 46.30 L38.43 46.91 L37.37 47.44 L36.27 47.90 L35.13 48.27 L33.96 48.55 L32.77 48.75 L31.56 48.85 L30.33 48.86 L29.11 48.77 L27.88 48.59 L26.67 48.31 L25.47 47.94 L24.31 47.47 L23.17 46.91 L22.08 46.27 L21.03 45.53 L20.04 44.72 L19.10 43.82 L18.24 42.85 L17.45 41.81 L16.74 40.71 L16.11 39.55 L15.57 38.34 L15.12 37.08 L14.77 35.79 L14.52 34.47 L14.37 33.12 L14.32 31.76 L14.38 30.40 L14.54 29.03 L14.82 27.68 L15.19 26.35 L15.67 25.04 L16.25 23.76 L16.94 22.53 L17.72 21.35 L18.59 20.23 L19.55 19.17 L20.59 18.18 L21.71 17.28" fill="none" stroke="#f6f1e8" strokeWidth="4.2" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx="32.68" cy="13.51" r="3.4" fill="#cdb382" />
+          </svg>
+          <div style={{ fontSize: 40 }}>FairChair</div>
+          <div style={{ marginLeft: "auto", fontSize: 22, color: "#72645a", fontFamily: "sans-serif", letterSpacing: 3, textTransform: "uppercase" }}>Measured quote</div>
+        </div>
+        {q && studio && service ? (
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div style={{ display: "flex", fontSize: 30, color: "#4b3e36", fontFamily: "sans-serif" }}>{`${service.name} · ${studio.name}`}</div>
+            <div style={{ display: "flex", fontSize: 150, lineHeight: 1, marginTop: 12 }}>{moneyRange(q.result.price, studio.currency)}</div>
+            <div style={{ display: "flex", fontSize: 34, color: "#4b3e36", marginTop: 8, fontFamily: "sans-serif" }}>{`${durationRange(q.result.minutes)} in the chair`}</div>
+          </div>
+        ) : (
+          <div style={{ display: "flex", fontSize: 80 }}>Price the hair, not the argument.</div>
+        )}
+        <div style={{ display: "flex", gap: 14, fontFamily: "sans-serif" }}>
+          {chips.map((c) => (
+            <div key={c} style={{ display: "flex", padding: "10px 20px", borderRadius: 999, background: "#dcece6", color: "#1f6b5e", fontSize: 24 }}>
+              {c}
+            </div>
+          ))}
+          <div style={{ marginLeft: "auto", fontSize: 22, color: "#72645a", alignSelf: "center" }}>Hair measured by YouCam</div>
+        </div>
+      </div>
+    ),
+    size,
+  );
+}

@@ -61,20 +61,20 @@ export type ResultSource = "live" | "replay" | "sample";
 export function SourceBadge({ source, recordedAt }: { source: ResultSource; recordedAt?: string }) {
   if (source === "live") {
     return (
-      <span className="inline-flex items-center gap-1.5 rounded-full border border-measured/30 bg-measured-soft px-2.5 py-1 text-xs font-semibold text-measured">
+      <span className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-measured/30 bg-measured-soft px-2.5 py-1 text-xs font-semibold text-measured">
         <span className="h-1.5 w-1.5 rounded-full bg-measured" /> Live YouCam result
       </span>
     );
   }
   if (source === "replay") {
     return (
-      <span className="inline-flex items-center gap-1.5 rounded-full border border-line-strong bg-surface-2 px-2.5 py-1 text-xs font-semibold text-ink-2">
+      <span className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-line-strong bg-surface-2 px-2.5 py-1 text-xs font-semibold text-ink-2">
         Recorded YouCam result{recordedAt ? ` · ${recordedAt}` : ""}
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-warn/40 bg-warn-soft px-2.5 py-1 text-xs font-semibold text-warn">
+    <span className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-warn/40 bg-warn-soft px-2.5 py-1 text-xs font-semibold text-warn">
       Sample values — not a YouCam result
     </span>
   );

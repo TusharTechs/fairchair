@@ -30,7 +30,12 @@ export const DEMO_CLIENTS: DemoClient[] = [
     blurb: "Full, collarbone-length 3B curls",
     photo: "/demo/generated/curly-collarbone.jpg",
     extPreview: "/demo/extensions/curly-collarbone-all_length_2.jpg",
-    previews: { knotless: "/demo/previews/curly-collarbone-knotless.jpg" },
+    previews: {
+      knotless: "/demo/previews/curly-collarbone-knotless.jpg",
+      "silk-press": "/demo/previews/curly-collarbone-silk-press.jpg",
+      "sew-in": "/demo/previews/curly-collarbone-sew-in.jpg",
+      "tape-ins": "/demo/previews/curly-collarbone-tape-ins.jpg",
+    },
     source: "replay",
     recordedAt: RECORDED,
     recorded: {
@@ -46,7 +51,12 @@ export const DEMO_CLIENTS: DemoClient[] = [
     blurb: "4C afro — shrinkage hides its length",
     photo: "/demo/generated/coily-long-full.jpg",
     extPreview: "/demo/extensions/coily-long-full-all_length_2.jpg",
-    previews: { knotless: "/demo/previews/coily-long-full-knotless.jpg" },
+    previews: {
+      knotless: "/demo/previews/coily-long-full-knotless.jpg",
+      "silk-press": "/demo/previews/coily-long-full-silk-press.jpg",
+      "sew-in": "/demo/previews/coily-long-full-sew-in.jpg",
+      "tape-ins": "/demo/previews/coily-long-full-tape-ins.jpg",
+    },
     source: "replay",
     recordedAt: RECORDED,
     recorded: {
@@ -62,7 +72,12 @@ export const DEMO_CLIENTS: DemoClient[] = [
     blurb: "Short tapered 4C cut",
     photo: "/demo/generated/coily-short.jpg",
     extPreview: "/demo/extensions/coily-short-all_length_2.jpg",
-    previews: { knotless: "/demo/previews/coily-short-knotless.jpg" },
+    previews: {
+      knotless: "/demo/previews/coily-short-knotless.jpg",
+      "silk-press": "/demo/previews/coily-short-silk-press.jpg",
+      "sew-in": "/demo/previews/coily-short-sew-in.jpg",
+      "tape-ins": "/demo/previews/coily-short-tape-ins.jpg",
+    },
     source: "replay",
     recordedAt: RECORDED,
     recorded: {
@@ -78,7 +93,12 @@ export const DEMO_CLIENTS: DemoClient[] = [
     blurb: "Stretched 4A–4B, chest length",
     photo: "/demo/generated/kinky-chest-stretched.jpg",
     extPreview: "/demo/extensions/kinky-chest-stretched-all_length_2.jpg",
-    previews: { knotless: "/demo/previews/kinky-chest-stretched-knotless.jpg" },
+    previews: {
+      knotless: "/demo/previews/kinky-chest-stretched-knotless.jpg",
+      "silk-press": "/demo/previews/kinky-chest-stretched-silk-press.jpg",
+      "sew-in": "/demo/previews/kinky-chest-stretched-sew-in.jpg",
+      "tape-ins": "/demo/previews/kinky-chest-stretched-tape-ins.jpg",
+    },
     source: "replay",
     recordedAt: RECORDED,
     recorded: {

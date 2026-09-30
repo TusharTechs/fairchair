@@ -52,7 +52,7 @@ export function Chapters({ chapters }: { chapters: Chapter[] }) {
             className="flex min-h-[46vh] flex-col justify-center border-t border-line py-10 first:border-t-0 lg:min-h-[62vh]"
           >
             <p className="numeral text-2xl text-accent-ink">{c.n}</p>
-            <h3 className={cx("mt-2 font-display text-3xl leading-tight transition-colors duration-500 sm:text-4xl", active === i ? "text-ink" : "text-ink lg:text-ink/35")}>
+            <h3 className={cx("mt-2 font-display text-3xl leading-tight transition-colors duration-500 sm:text-4xl", active === i ? "text-ink" : "text-ink lg:text-ink/55")}>
               {c.title}
             </h3>
             <p className="mt-3 max-w-md text-ink-2">{c.body}</p>
@@ -69,7 +69,8 @@ export function Chapters({ chapters }: { chapters: Chapter[] }) {
           {chapters.map((c, i) => (
             <div
               key={c.n}
-              aria-hidden={active !== i}
+              // inert: inactive visuals leave both the tab order and the accessibility tree.
+              inert={active !== i}
               className={cx(
                 "absolute inset-0 transition-all duration-700 [transition-timing-function:var(--ease-out)]",
                 active === i ? "opacity-100 translate-y-0" : "pointer-events-none opacity-0 translate-y-3",

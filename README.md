@@ -167,8 +167,9 @@ npm run youcam:check   # verifies the key, shows the unit balance (0 units)
 
 ## Quality
 
-- 35 unit tests (pricing, matching, normalizers against documented and live response shapes, accuracy loop, time zones).
-- axe-core WCAG 2 A/AA: **0 violations** on all eight public pages; no horizontal overflow at 375 px.
+- 36 unit tests (pricing, matching, normalizers against documented and live response shapes, accuracy loop, time zones): `npm test`.
+- End-to-end in real Chrome, desktop and phone, both journeys with 0 console errors: `npm run qa`.
+- axe-core WCAG 2 A/AA: **0 violations** on nine pages (`npm run axe`); no horizontal overflow at 375 px; keyboard-operable before/after slider; reduced-motion respected.
 - Privacy: consent before capture; photos never stored by FairChair; YouCam tasks and inputs deleted after use.
 
 ## Honest limits

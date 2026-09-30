@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SiteFooter } from "@/components/site-footer";
 import { TwoHeads } from "@/components/two-heads";
 import { ButtonLink, Eyebrow, SiteHeader } from "@/components/ui";
 import { DEMO_STUDIO_SLUG } from "@/lib/db/seed";
@@ -22,6 +23,7 @@ export default async function ComparePage() {
           <TwoHeads studio={studio} serviceId="knotless" options={{ size: "medium", length: "mid-back" }} />
         </div>
       </main>
+      <SiteFooter />
     </>
   );
 }
