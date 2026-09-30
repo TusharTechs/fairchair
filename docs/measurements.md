@@ -45,3 +45,9 @@ Four views of the "curly-collarbone" portrait posted to `POST /api/analyses` (kn
 - Transferred onto four portraits (3B–3C curls, 4C afro, short tapered 4C, stretched 4A–4B): **4/4 succeeded**, 8.6–8.9 s each, 2 units each. Faces preserved; braids rendered at the reference length regardless of the client's natural length.
 - Live through FairChair's `/api/tryon`: 14.6 s round trip; result returned to the browser and not stored; task deleted afterwards.
 - Raw: `spike/tryon-*.json`; images: `public/demo/previews/`.
+
+## Run 4 — 2026-10-01 · production (Vercel + Neon)
+- All judge-path pages return 200 on https://fairchair.vercel.app; a wrong studio key returns 404.
+- Demo path (recorded results, 0 units): analysis → quote → booking → receipt → recorded try-on all succeed.
+- **Found:** Vercel rejects request bodies over 4.5 MB (`FUNCTION_PAYLOAD_TOO_LARGE`). Four full-size photos (~8 MB) failed before reaching our code. Fix: the browser prepares photos at 1280 px / JPEG 0.85 (≈270 KB each, 1.1 MB for four); client and server enforce a friendly limit.
+- Live analysis on production with browser-sized photos: **all four measurements in 18 s**; values match Run 1 (density 0.73 vs 0.74 at full resolution — same grade), confirming 1280 px loses nothing.
