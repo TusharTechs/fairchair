@@ -26,7 +26,7 @@ Start with **A + a free tier of 10 analysed quotes/month**; add B for heavy user
 
 **Honest read:** as a pure solo-stylist tool, FairChair is a *real but small* business. Margins improve only if (a) quotes per booking fall (analyse only after the client picks a slot/pays a refundable hold), (b) YouCam volume pricing drops (10k units/mo ≈ $0.046), or (c) a higher-value buyer pays.
 
-**The higher-value buyer: extension & wig brands (B2B, eCommerce).** The same engine answers the #1 pre-purchase question on every extension store: *how many bundles, what texture, what length, which shade?* Opened hair is non-returnable [F: Luxy return policy], and brands run human "colour match" teams today [F: Luxy, Bellami]. A Shopify app at **$99–299/month** per brand needs only ~10–20 brands to match the whole stylist scenario above, with far lower API cost per dollar of revenue. This is the version most likely to earn meaningful side income, and it's squarely "eCommerce value" for the hackathon narrative.
+**The higher-value buyer: extension & wig brands (B2B, eCommerce) — now built ("Find my match").** The same engine answers the #1 pre-purchase question on every extension store: *how many bundles, what texture, what length, which shade?* Opened hair is non-returnable [F: Luxy return policy], and brands run human "colour match" teams today [F: Luxy, Bellami]. A Shopify app at **$99–299/month** per brand needs only ~10–20 brands to match the whole stylist scenario above, with far lower API cost per dollar of revenue. This is the version most likely to earn meaningful side income, and it's squarely "eCommerce value" for the hackathon narrative.
 
 **Recommended sequencing:** win/place in the hackathon with the stylist story (clearest, most human demo) → launch free for stylists to collect real accuracy data → build the Shopify "Order the right hair" app on the same engine as the paid product.
 
@@ -54,3 +54,9 @@ Fixed running cost at launch ≈ **$40–60/month** + API usage.
 - 20 real stylists using it for a month, and published before/after numbers: fewer day-of price changes, fewer overruns.
 - One extension brand piloting the "order the right hair" widget.
 - A YouCam/Perfect Corp partnership (winners get a product-team meeting): they sell the hair APIs to "extension vendors and beauty supply retailers", so FairChair is a showcase for them.
+
+
+## 7. Store widget unit economics (built)
+- One match = hair type (2) + density (1) + length (2) = **5 units ≈ $0.26**, plus an optional extension try-on (1 unit ≈ $0.05). Hair colour (20 units) is excluded — it misread dark hair in testing and shoppers choose colour instead.
+- A typical extension order is 3–7 packs at ~$90–130 each, so the API cost is a fraction of a percent of order value.
+- Pricing: $99–299/month per store by matches included; integration costs the merchant nothing (paste a product link, add one Custom Liquid block; checkout stays in Shopify).

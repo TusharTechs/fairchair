@@ -6,9 +6,12 @@
 
 <p align="center"><strong>Honest quotes for textured hair, measured before anyone books.</strong></p>
 
-FairChair turns four client selfies into a line-item price, an appointment as long as the hair actually needs, and a supply list for braiders and extension stylists, using YouCam's hair type, density, length and frizz detection.
+FairChair uses YouCam's hair type, density, length and frizz detection to turn four guided selfies into decisions that are usually guessed from a blurry DM:
 
-Built for the [YouCam API Skin AI & eCommerce VTO Hackathon](https://youcam-api-skin-ai-ecommerce.devpost.com/).
+- **For braiders and extension stylists:** a line-item price, an appointment as long as the hair actually needs, a supply list, and a try-on of the stylist's own work.
+- **For hair-extension stores:** "Find my match" picks the right texture, length and pack count from the store's own Shopify product, previews it blended into the shopper's hair, and hands off to checkout.
+
+Built for the [YouCam API Skin AI & eCommerce VTO Hackathon](https://youcam-api-skin-ai-ecommerce.devpost.com/). Live: **https://fairchair.vercel.app**
 
 <p align="center">
   <img src="docs/screenshots/two-heads.png" alt="Same style, two heads, two honest quotes: every difference traced to a YouCam measurement" width="100%">
@@ -25,146 +28,121 @@ Built for the [YouCam API Skin AI & eCommerce VTO Hackathon](https://youcam-api-
 
 Independent braiders publish "Knotless, mid-back: from $220" and then quote from a blurry DM selfie at 11 pm. The things that change the price and the time, **how long, how full, how coily and how frizzy the client's natural hair is**, are listed in every braider's FAQ and measured by nobody. On the day, fuller and longer hair means two extra hours, a "$50 more" conversation at the chair, and the next client waiting. Existing quote tools still make someone *type* the hair in.
 
+Extension shoppers face the same unknowns before checkout: which texture blends, what length (curly hair wears shorter), how many packs. Opened hair can't be returned.
+
 ## What FairChair does
 
-1. **Measure.** The client takes four guided selfies. YouCam's hair detectors read curl pattern, density, natural length and frizz (plus hair colour for extension services).
-2. **Price.** The stylist's own menu and hourly rate turn measured differences into minutes of chair time and a price range. Every line on the quote says which measurement caused it.
-3. **See it.** The client previews the stylist's own portfolio style on themselves (YouCam hair try-on), before paying a deposit.
-4. **Agree.** The client books a slot already sized to the work and pays a deposit; both sides keep the same hashed receipt.
+### For stylists: `/s/<studio>`
+1. **Measure.** Four guided selfies (YouCam Camera Kit, or upload). YouCam reads curl pattern, density, natural length and frizz.
+2. **Price.** The stylist's own menu and hourly rate turn measured differences into minutes of chair time and a price range. Every line says which measurement caused it.
+3. **See it.** The client previews the stylist's own portfolio photo on themselves (YouCam hair try-on) before any deposit.
+4. **Agree.** Only start times that fit the whole appointment are offered; both sides keep the same hashed receipt.
 5. **Learn.** After each appointment the stylist logs the real time; FairChair shows which of *their* rules is consistently off.
 
-**Fair by design:** texture changes *time*, never the *rate*. A flat "+$25 for 4C" is a texture surcharge; FairChair won't apply it and offers the time-based equivalent instead.
+**Fair by design:** texture changes *time*, never the *rate*. A flat "+$25 for 4C" is a texture surcharge; FairChair won't apply it and offers the time-based equivalent.
 
 **The one-screen demo:** *Same style. Two heads. Two honest quotes.* With real YouCam results, the curlier client is **not** the more expensive one; the fuller head is.
 
+### For extension stores: `/m/<store>` (embeddable)
+1. The shopper picks a length and their colour family, then takes the same guided selfies.
+2. Texture ← curl pattern · packs ← density · length ← wanted length + shrinkage allowance for curly/coily hair. Every choice shows its reason.
+3. YouCam hair-extension try-on shows added length blended into the shopper's **own** texture.
+4. **Add to cart** opens the store's own Shopify checkout with the matched variant and pack count (`/cart/<variant>:<qty>`).
+
+Merchants connect by pasting a product link: FairChair reads the public product JSON (`/products/<handle>.js`), so no Shopify app is needed, and the widget goes in with one Custom Liquid block. See the demo storefront at `/store-demo`.
+
 ## How YouCam is used
 
-| Decision FairChair makes | YouCam API | Endpoint |
+| Decision FairChair makes | YouCam capability | Endpoint / module |
 |---|---|---|
-| Stretch/detangle prep time, extension texture match | AI Hair Type Detection (1→4c, 9 bands) | `POST /s2s/v2.0/task/hair-type-detection` (front, right, left views) |
-| Parting/feeding time, extension pack count | AI Hair Density Detection (0–3) | `POST /s2s/v2.0/task/hair-density-detection` (chin-down view) |
-| Short-hair/long-hair time, extension length to order | AI Hair Length Detection (8 bands) | `POST /s2s/v2.0/task/hair-length-detection` (front view) |
-| Smoothing prep time | AI Hair Frizziness Detection (4 grades) | `POST /s2s/v2.0/task/hair-frizziness-detection` (front, right, left) |
-| Extension shade | AI Facial Color Tones Analyzer → `hair_color` | `POST /s2s/v2.0/task/skin-tone-analysis` |
-| Show the booked style on the client before the deposit | AI Hairstyle Generator (hair-transfer v2.1) with the **stylist's own portfolio photo** as reference | `POST /s2s/v2.1/task/hair-transfer` |
-| Photo upload, privacy clean-up | File API, Task delete | `POST /s2s/v2.0/file` → PUT, `POST /s2s/v2.0/task/delete` |
+| Prep time; extension texture | AI Hair Type Detection (1 → 4c) | `POST /s2s/v2.0/task/hair-type-detection` (front, right, left) |
+| Parting time; pack count | AI Hair Density Detection (0–3) | `POST /s2s/v2.0/task/hair-density-detection` (chin-down) |
+| Length tier; length to order | AI Hair Length Detection (8 bands) | `POST /s2s/v2.0/task/hair-length-detection` (step-back or front) |
+| Smoothing time | AI Hair Frizziness Detection | `POST /s2s/v2.0/task/hair-frizziness-detection` (front, right, left) |
+| Try the stylist's own work on the client | AI Hairstyle (hair-transfer v2.1, custom reference) | `POST /s2s/v2.1/task/hair-transfer` |
+| Preview extensions in the shopper's texture | AI Hair Extension | `POST /s2s/v2.0/task/hair-ext` |
+| Guided capture with live framing/angle/light checks | **JS Camera Kit** v2.5: `hairlength`, `hairtype`, `hairdensity` modes | `plugins-media.makeupar.com/v2.5-camera-kit/sdk.js` |
+| Upload, balance, privacy clean-up | File, Credit, Task delete | `POST /s2s/v2.0/file`, `GET /s2s/v1.0/client/credit`, `POST /s2s/v2.0/task/delete` |
+| Demo assets (AI-generated people, product photo) | AI Image Generator, image-to-image | `/s2s/v2.0/task/text-to-image/youcam` |
 
-Integration details (all server-side; the key never reaches the browser):
-- Four photos uploaded once each via presigned URLs; four detectors run **in parallel**; the client polls a stateless status endpoint (serverless-safe).
-- **Result cache** keyed by image hash per feature, so the same photos never spend units twice.
-- **Credit circuit-breaker** (reads `/s2s/v1.0/client/credit`) and a per-device daily cap protect the unit budget.
-- One automatic retry on transient engine errors (errors cost no units).
-- After *all* tasks finish, tasks and their input photos are deleted from YouCam (`task/delete`).
-- Demo clients replay **recorded live YouCam responses** and are always labelled; nothing is presented as live that isn't.
+**Tested and deliberately excluded:** `skin-tone-analysis` → `hair_color` labelled black hair "Blonde" on 2 of 4 portraits (both dark hair on dark skin), so shade is the shopper's choice, never auto-selected. See [`docs/measurements.md`](docs/measurements.md).
 
-Live-API findings (accuracy smoke test, determinism, latency, bugs found) are in [`docs/measurements.md`](docs/measurements.md).
+Integration details (the API key never reaches the browser):
+- Photos resized on the phone (≤1280 px, EXIF stripped, side views fitted to the front photo's exact size as the detectors require), uploaded once per view via presigned URLs; detectors run **in parallel**; stateless polling (serverless-safe).
+- **Result cache** by image hash per feature; **credit circuit-breaker** and per-device daily cap; one retry on transient engine errors (errors cost no units).
+- `task/delete` only after **all** tasks finish (deleting early also deletes shared input photos, which we found in live testing).
+- Try-on images are returned to the browser and never stored.
+- Demo clients replay **recorded live YouCam responses**, always labelled.
+
+Live-API findings (accuracy, determinism, latency, doc/SDK mismatches, the colour decision, production limits) are in [`docs/measurements.md`](docs/measurements.md).
 
 ## Architecture
 
-### System
-
 ```mermaid
 flowchart LR
-  subgraph Client["Client's phone (browser)"]
-    QF["Quote flow<br/>/s/[studio]"]
-    PREP["Photo prep<br/>resize · strip EXIF<br/>match side-view size"]
-    QF --> PREP
+  subgraph Browser["Client / shopper phone"]
+    CK["YouCam JS Camera Kit<br/>hairlength · hairtype · hairdensity"]
+    PREP["Photo prep<br/>≤1280 px · EXIF stripped<br/>side views size-matched"]
+    QF["Stylist quote flow<br/>/s/[studio] · /embed/[studio]"]
+    MF["Store match widget<br/>/m/[store] · /embed/m/[store]"]
+    CK --> PREP
+    PREP --> QF & MF
   end
 
-  subgraph Stylist["Stylist (browser)"]
-    DASH["Studio dashboard<br/>/studio/[studio]"]
-    START["Onboarding<br/>/start"]
+  subgraph Owners["Businesses"]
+    DASH["Stylist dashboard<br/>menu · rules · portfolio · accuracy"]
+    SHOPNEW["Store onboarding<br/>paste Shopify product link"]
   end
 
   subgraph App["FairChair · Next.js 16 on Vercel"]
-    API["Route handlers<br/>/api/analyses · /api/quotes<br/>/api/studios · /api/status"]
-    ORCH["Analysis orchestrator<br/>upload once · parallel tasks<br/>stateless polling · 1 retry"]
-    GUARD["Credit breaker<br/>+ per-device daily cap"]
-    ENGINE["Pricing engine (pure)<br/>minutes → price at stylist rate<br/>fairness guard · supplies"]
-    ACC["Accuracy loop<br/>estimated vs logged time"]
-    RECEIPT["Receipt<br/>SHA-256 hash · rules version"]
+    API["Route handlers"]
+    ORCH["Analysis orchestrator<br/>upload once · parallel tasks<br/>cache · breaker · retry"]
+    PRICE["Pricing engine<br/>minutes → price · fairness guard"]
+    MATCH["Matching engine<br/>variant · packs · length"]
+    TRY["Try-on<br/>hair-transfer · hair-ext"]
   end
 
-  subgraph YouCam["YouCam API (Perfect Corp.)"]
-    FILE["File API<br/>presigned upload"]
-    TYPE["Hair Type Detection"]
-    DENS["Hair Density Detection"]
-    LEN["Hair Length Detection"]
-    FRIZZ["Hair Frizziness Detection"]
-    TONE["Facial Color Tones<br/>(hair colour)"]
-    DEL["Task delete<br/>(inputs + outputs)"]
-    CREDIT["Credit balance"]
+  subgraph YouCam["YouCam API"]
+    DET["Hair type · density<br/>length · frizz"]
+    VTO["hair-transfer · hair-ext"]
+    FILE["File · Credit · Task delete"]
   end
 
-  DB[("Postgres · Neon<br/>studios · analyses · tasks<br/>quotes · result cache · usage")]
+  SHOP[("Shopify storefront<br/>/products/*.js · /cart/v:q")]
+  DB[("Postgres · Neon")]
 
-  PREP -- "4 selfies" --> API
-  DASH --> API
-  START --> API
-  API --> GUARD --> ORCH
-  GUARD -. "balance" .-> CREDIT
+  QF & MF --> API
+  DASH & SHOPNEW --> API
+  API --> ORCH --> DET
   ORCH --> FILE
-  ORCH --> TYPE & DENS & LEN & FRIZZ & TONE
-  ORCH -- "after all tasks finish" --> DEL
-  ORCH <--> DB
-  API --> ENGINE --> RECEIPT
-  ENGINE <--> DB
-  ACC <--> DB
-  DASH -. "log actual time" .-> ACC
+  API --> TRY --> VTO
+  API --> PRICE
+  MF --> MATCH
+  SHOPNEW -. "read product JSON" .-> SHOP
+  MF -. "cart permalink" .-> SHOP
+  ORCH & API <--> DB
 ```
 
-### One live quote
-
-```mermaid
-sequenceDiagram
-  autonumber
-  actor C as Client
-  participant B as Browser
-  participant F as FairChair API
-  participant D as Postgres
-  participant Y as YouCam API
-
-  C->>B: Pick style · take 4 guided selfies · consent
-  B->>B: Resize to ≤1600 px, strip EXIF,<br/>fit side views to the front photo's size
-  B->>F: POST /api/analyses (front, right, left, down)
-  F->>Y: GET /s2s/v1.0/client/credit (cached 60 s)
-  F->>D: Look up result cache by image hash
-  alt cache miss
-    F->>Y: POST /s2s/v2.0/file → PUT presigned URL (once per view)
-    par four detectors in parallel
-      F->>Y: hair-type-detection [front, right, left]
-    and
-      F->>Y: hair-density-detection [chin down]
-    and
-      F->>Y: hair-length-detection [front]
-    and
-      F->>Y: hair-frizziness-detection [front, right, left]
-    end
-  end
-  F-->>B: { analysis id }
-  loop every ~2 s until done
-    B->>F: GET /api/analyses/:id
-    F->>Y: GET task status (one call per running task)
-    Y-->>F: success → normalized measurement<br/>(transient error → one retry)
-    F->>D: Save result, cache it, record units
-  end
-  F->>Y: POST task/delete for every task (only after all finish)
-  B->>B: Price preview with the stylist's rules
-  C->>B: Hold quote · pick a slot sized to the work
-  B->>F: POST /api/quotes → POST /api/quotes/:id/book
-  F->>F: Recompute quote server-side · SHA-256 receipt
-  F->>D: Store quote + booking
-  F-->>C: Receipt link (same record the stylist sees)
-```
-
-More detail: [`docs/architecture.md`](docs/architecture.md).
+The sequence of one live quote and the full design are in [`docs/architecture.md`](docs/architecture.md).
 
 ## Try it
 
-- **Compare:** `/compare`: the two-heads demo on its own page.
-- **Client:** `/s/amara-braids-demo`: pick a style, then use your own selfies (live) or a demo client (recorded).
-- **Stylist:** `/studio/amara-braids-demo?key=demo`: requests, calendar, menu & rules (edit and watch the preview quote change), accuracy, share links.
-- **Your own studio:** `/start`.
+| What | Where |
+|---|---|
+| Two heads, two quotes | `/compare` |
+| Client quote (live selfies or demo clients) | `/s/amara-braids-demo` |
+| Stylist dashboard | `/studio/amara-braids-demo?key=demo` |
+| Demo storefront with the match widget | `/store-demo` |
+| Connect a Shopify product | `/shops/new` |
+| Your own studio | `/start` |
+
+Embed on any site:
+
+```html
+<div data-fairchair="your-studio"></div>        <!-- stylist quote flow -->
+<div data-fairchair-shop="your-store"></div>    <!-- store match widget -->
+<script src="https://fairchair.vercel.app/embed.js" async></script>
+```
 
 ## Run locally
 
@@ -172,41 +150,40 @@ Requires Node 22+.
 
 ```bash
 npm install
-cp .env.example .env   # add YOUCAM_API_KEY
-npm run dev            # http://localhost:3000 — uses embedded PGlite, no database setup
+cp .env.example .env   # add YOUCAM_API_KEY; leave DATABASE_URL empty to use embedded PGlite
+npm run dev
 ```
 
-Other scripts:
-
 ```bash
-npm test               # pricing engine, YouCam normalizers, accuracy, timezone tests
-npm run youcam:check   # verifies the key and shows the unit balance (spends 0 units)
-npm run spike          # the live accuracy spike (generates synthetic portraits; spends units)
+npm test               # pricing, matching, YouCam normalizers, accuracy, time zones
+npm run youcam:check   # verifies the key, shows the unit balance (0 units)
 ```
 
 ## Deploy (Vercel)
 
-1. Import the GitHub repo into Vercel.
-2. Add a **Neon Postgres** database (Vercel → Storage → Neon); it sets `DATABASE_URL`. Migrations run automatically before each build.
-3. Set environment variables: `YOUCAM_API_KEY`, `APP_SECRET` (long random string), optionally `CREDIT_RESERVE` and `LIVE_DAILY_CAP_PER_IP`.
+1. Import the repo into Vercel.
+2. Add Postgres (Neon) and set `DATABASE_URL`; migrations run before each build.
+3. Set `YOUCAM_API_KEY` and `APP_SECRET` (long random string); optionally `CREDIT_RESERVE`, `LIVE_DAILY_CAP_PER_IP`.
 
-## Stack
+## Quality
 
-Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4 · Drizzle ORM · Postgres (Neon; embedded PGlite locally) · Zod · Vitest.
+- 35 unit tests (pricing, matching, normalizers against documented and live response shapes, accuracy loop, time zones).
+- axe-core WCAG 2 A/AA: **0 violations** on all eight public pages; no horizontal overflow at 375 px.
+- Privacy: consent before capture; photos never stored by FairChair; YouCam tasks and inputs deleted after use.
 
 ## Honest limits
 
-- Measurements are coarse bands, so quotes are ranges and the stylist can override with a reason the client sees.
-- Hair length is measured as the hair hangs; curly/coily clients can add a *reported* stretched length, labelled as reported.
-- Accuracy has been smoke-tested on synthetic portraits (see `docs/measurements.md`); a study on real, consented photos is next.
-- FairChair measures appearance for pricing and scheduling. It does not assess hair or scalp health.
+- Measurements are coarse bands, so quotes are ranges; stylists can override with a reason the client sees.
+- Length is measured as hair hangs; curly/coily clients can add a *reported* stretched length, shown as reported.
+- Accuracy was smoke-tested on AI-generated portraits (`docs/measurements.md`); a study on real, consented photos is next.
+- FairChair measures appearance for pricing and matching. It does not assess hair or scalp health.
 
 ## Project documents
 
-- [`research/`](research/): hackathon requirements, previous-winner analysis, idea bank (22 concepts), evidence register, product thesis, adversarial review
-- [`docs/architecture.md`](docs/architecture.md), [`docs/business.md`](docs/business.md), [`docs/measurements.md`](docs/measurements.md)
+- [`research/`](research/): hackathon requirements, previous-winner analysis, idea bank (22 concepts), evidence register, product thesis, adversarial reviews
+- [`docs/architecture.md`](docs/architecture.md), [`docs/business.md`](docs/business.md), [`docs/measurements.md`](docs/measurements.md), [`docs/demo-script.md`](docs/demo-script.md)
 - The YouCam upload/poll client pattern was adapted from the author's previous hackathon project (MirrorIQ); everything else was built new for this hackathon.
 
 ## License
 
-[MIT](LICENSE) © 2026 Tushar Agarwal. YouCam and Perfect Corp. are trademarks of Perfect Corp.; this project uses the YouCam API under its [terms of service](https://www.makeupar.com/perfectbeauty/youcam/terms-of-service-api). Demo portraits are AI-generated.
+[MIT](LICENSE) © 2026 Tushar Agarwal. YouCam and Perfect Corp. are trademarks of Perfect Corp.; this project uses the YouCam API under its [terms of service](https://www.makeupar.com/perfectbeauty/youcam/terms-of-service-api). Demo people and product photos are AI-generated.
