@@ -8,7 +8,7 @@
 
 export type Prepared = { blob: Blob; width: number; height: number };
 
-export async function prepareImage(file: File, opts: { maxSide?: number; size?: { width: number; height: number } } = {}): Promise<Prepared> {
+export async function prepareImage(file: Blob, opts: { maxSide?: number; size?: { width: number; height: number } } = {}): Promise<Prepared> {
   let bitmap: ImageBitmap;
   try {
     bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });

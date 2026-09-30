@@ -17,6 +17,8 @@ export type DemoClient = {
   errors?: Partial<Record<AnalysisFeature, string>>;
   /** Recorded YouCam hair-transfer results, by service id. */
   previews?: Record<string, string>;
+  /** Recorded YouCam hair-extension try-on (template all_length_2_). */
+  extPreview?: string;
 };
 
 const RECORDED = "30 Sep 2026";
@@ -27,6 +29,7 @@ export const DEMO_CLIENTS: DemoClient[] = [
     name: "Maya",
     blurb: "Full, collarbone-length 3B curls",
     photo: "/demo/generated/curly-collarbone.jpg",
+    extPreview: "/demo/extensions/curly-collarbone-all_length_2.jpg",
     previews: { knotless: "/demo/previews/curly-collarbone-knotless.jpg" },
     source: "replay",
     recordedAt: RECORDED,
@@ -42,6 +45,7 @@ export const DEMO_CLIENTS: DemoClient[] = [
     name: "Nia",
     blurb: "4C afro — shrinkage hides its length",
     photo: "/demo/generated/coily-long-full.jpg",
+    extPreview: "/demo/extensions/coily-long-full-all_length_2.jpg",
     previews: { knotless: "/demo/previews/coily-long-full-knotless.jpg" },
     source: "replay",
     recordedAt: RECORDED,
@@ -57,6 +61,7 @@ export const DEMO_CLIENTS: DemoClient[] = [
     name: "Tess",
     blurb: "Short tapered 4C cut",
     photo: "/demo/generated/coily-short.jpg",
+    extPreview: "/demo/extensions/coily-short-all_length_2.jpg",
     previews: { knotless: "/demo/previews/coily-short-knotless.jpg" },
     source: "replay",
     recordedAt: RECORDED,
@@ -72,6 +77,7 @@ export const DEMO_CLIENTS: DemoClient[] = [
     name: "Ada",
     blurb: "Stretched 4A–4B, chest length",
     photo: "/demo/generated/kinky-chest-stretched.jpg",
+    extPreview: "/demo/extensions/kinky-chest-stretched-all_length_2.jpg",
     previews: { knotless: "/demo/previews/kinky-chest-stretched-knotless.jpg" },
     source: "replay",
     recordedAt: RECORDED,
