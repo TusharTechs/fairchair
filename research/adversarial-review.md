@@ -31,3 +31,18 @@ Each round: attack as a skeptical first-round judge, then record the fix. Seriou
 | 12 | "Name sounds like furniture." | Low | Test alternatives before submission; the tagline carries meaning. |
 
 **Open critical item:** #5 (accuracy on tightly coiled hair). Blocks the Phase 3 go/no-go. Requires the user's YouCam API key.
+
+---
+
+## Round 2 — built product (2026-10-01)
+
+| # | Judge's attack | Severity | Status / fix |
+|---|---|---|---|
+| 1 | "Which track is this? It's hair analysis, not skin, and there's no try-on." | **High** | The rules accept Hair & Beard APIs, and booking a beauty service + a hair supply list is eCommerce value — but the *eCommerce VTO* track is the natural home and we show no VTO. **Fix next:** try-on preview of the booked style on the client (YouCam `hair-transfer` with the stylist's own portfolio photo; `hair-ext` for extension length). |
+| 2 | "Four selfies is friction." | Medium | Side views and chin-down are optional (unmeasured → wider range, stated on screen). Still to do: evaluate YouCam JS Camera Kit guided capture; measure completion on real users. |
+| 3 | "Density never worked in your test." | High | True for synthetic lowered views. **Needs real, consented selfies** (planned with the user); until then the product degrades gracefully and the submission says so. |
+| 4 | "Demo people are AI-generated — is any of this real?" | Medium | Measurements are recorded live YouCam output, labelled on every card; the video shows a real person's live capture with the **Live YouCam result** badge; `docs/measurements.md` has raw outputs. |
+| 5 | "Isn't this a calculator with a photo?" | Addressed | Every quote line cites the measurement that caused it; determinism shown (8/8); the surprising two-heads result is only possible with measurement. |
+| 6 | "Unit economics?" | Addressed | ~$0.38/quote; model tied to deposits (`docs/business.md`). Not shown as in-app pricing. |
+| 7 | "Privacy of face photos." | Addressed | Consent, EXIF strip, no storage, upstream delete after completion; biometric-law risk noted in business doc for launch. |
+| 8 | "Does it work for judges during Nov 3–20?" | Medium | Recorded demo path needs no units; live path protected by reserve + cap; keep batch B (1,000 units, expires Dec 28) for judging. Verify on the deployed URL. |
