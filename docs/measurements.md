@@ -39,3 +39,9 @@ Four views of the "curly-collarbone" portrait posted to `POST /api/analyses` (kn
 1. **First attempt found a real bug.** Hair type and density succeeded; length and frizz then failed with `unknown_internal_error`. Cause: FairChair called `POST /s2s/v2.0/task/delete` as soon as each task succeeded, and that endpoint also deletes the task's *input files* — which the still-running tasks shared (the front photo). Fix: delete upstream only after **every** task in the analysis has finished; plus one automatic retry for transient engine errors (`unknown_internal_error`, `error_inference`), which cost no units.
 2. **Second attempt: complete in 14 s.** Type and density were served from FairChair's result cache (same image hashes → 0 units); length and frizz ran live. Measurements identical to Run 1 (3B–3C · 2.57 High · above chest · Slightly Frizzy).
 3. Upstream tasks deleted after completion (`upstream_deleted = true`).
+
+## Run 3 — 2026-10-01 · try-on (hair-transfer v2.1, custom reference)
+- Reference: one AI-generated portfolio photo of medium, mid-back knotless braids (text-to-image, ~1 unit).
+- Transferred onto four portraits (3B–3C curls, 4C afro, short tapered 4C, stretched 4A–4B): **4/4 succeeded**, 8.6–8.9 s each, 2 units each. Faces preserved; braids rendered at the reference length regardless of the client's natural length.
+- Live through FairChair's `/api/tryon`: 14.6 s round trip; result returned to the browser and not stored; task deleted afterwards.
+- Raw: `spike/tryon-*.json`; images: `public/demo/previews/`.

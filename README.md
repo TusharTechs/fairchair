@@ -29,8 +29,9 @@ Independent braiders publish "Knotless, mid-back: from $220" and then quote from
 
 1. **Measure.** The client takes four guided selfies. YouCam's hair detectors read curl pattern, density, natural length and frizz (plus hair colour for extension services).
 2. **Price.** The stylist's own menu and hourly rate turn measured differences into minutes of chair time and a price range. Every line on the quote says which measurement caused it.
-3. **Agree.** The client books a slot already sized to the work and pays a deposit; both sides keep the same hashed receipt.
-4. **Learn.** After each appointment the stylist logs the real time; FairChair shows which of *their* rules is consistently off.
+3. **See it.** The client previews the stylist's own portfolio style on themselves (YouCam hair try-on), before paying a deposit.
+4. **Agree.** The client books a slot already sized to the work and pays a deposit; both sides keep the same hashed receipt.
+5. **Learn.** After each appointment the stylist logs the real time; FairChair shows which of *their* rules is consistently off.
 
 **Fair by design:** texture changes *time*, never the *rate*. A flat "+$25 for 4C" is a texture surcharge; FairChair won't apply it and offers the time-based equivalent instead.
 
@@ -45,6 +46,7 @@ Independent braiders publish "Knotless, mid-back: from $220" and then quote from
 | Short-hair/long-hair time, extension length to order | AI Hair Length Detection (8 bands) | `POST /s2s/v2.0/task/hair-length-detection` (front view) |
 | Smoothing prep time | AI Hair Frizziness Detection (4 grades) | `POST /s2s/v2.0/task/hair-frizziness-detection` (front, right, left) |
 | Extension shade | AI Facial Color Tones Analyzer → `hair_color` | `POST /s2s/v2.0/task/skin-tone-analysis` |
+| Show the booked style on the client before the deposit | AI Hairstyle Generator (hair-transfer v2.1) with the **stylist's own portfolio photo** as reference | `POST /s2s/v2.1/task/hair-transfer` |
 | Photo upload, privacy clean-up | File API, Task delete | `POST /s2s/v2.0/file` → PUT, `POST /s2s/v2.0/task/delete` |
 
 Integration details (all server-side; the key never reaches the browser):

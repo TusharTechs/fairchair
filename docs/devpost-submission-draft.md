@@ -22,8 +22,9 @@ FairChair is a quote link a stylist puts in their bio.
 
 1. **Measure.** The client picks a style and takes four guided selfies (straight on, turned right, turned left, chin down — the angles YouCam's detectors require). YouCam reads curl pattern (1 → 4c), density (0–3), natural length and frizz, plus hair colour for extension services.
 2. **Price.** The stylist's own menu and hourly rate turn measured differences into **minutes of chair time** and a price range. Every line on the quote shows the measurement that caused it — e.g. *"Parting and feeding a fuller head · +45 min · Hair Density: High Density (2.57/3)"*.
-3. **Agree.** The client books a slot already sized to the work (only start times that fit are offered) and both sides keep the same hashed receipt.
-4. **Learn.** After the appointment the stylist logs the real time; FairChair shows which of *their* rules consistently runs over.
+3. **See it.** One tap shows the stylist's *own portfolio photo* on the client — YouCam hair-transfer with a custom reference — before any deposit is paid. The preview isn't stored.
+4. **Agree.** The client books a slot already sized to the work (only start times that fit are offered) and both sides keep the same hashed receipt.
+5. **Learn.** After the appointment the stylist logs the real time; FairChair shows which of *their* rules consistently runs over.
 
 **Fair by design.** Coily hair can take longer to stretch and detangle — that's real work, priced as time at the stylist's rate. A flat "+$25 for 4C" is a texture surcharge; FairChair won't apply one and offers the time-based equivalent.
 
@@ -45,6 +46,7 @@ Before building the product we ran a go/no-go spike against the live API (`docs/
 - Hair type within one band on **6/6** synthetic portraits (5/6 exactly in the intended band), including all three coily heads — the risk that would have killed the idea.
 - **8/8** repeat analyses returned identical results: the same photos always produce the same quote.
 - End-to-end quote through FairChair: **14 s**; **7 units ≈ $0.38** of API per quote.
+- Try-on of a stylist's knotless-braid portfolio photo onto 4 different heads (3B curls, 4C afro, short 4C, stretched 4A): all succeeded in ~9 s each (2 units); live through FairChair's API in 14.6 s.
 - Findings that changed the product: hair length measures how hair *hangs* (a big 4C afro reads "short hair" — shrinkage), so coily clients can add a *reported* stretched length, labelled as reported.
 
 ## Challenges we ran into
