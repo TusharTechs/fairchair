@@ -201,3 +201,10 @@ First-party events only (no third-party trackers): quote_started, capture_ok, an
 | Try-on preview | 1–2 | hair-ext / hair-style / hair-color |
 | Budget | 1,000 (+≤1,000 share bonus) | ≈ 110 full quotes incl. try-on; reserve 200 for judging |
 _Dollar price per unit to be confirmed from yce.perfectcorp.com/ai-api/api-pricing._
+
+## 13. Store widget ("Find my match") — added 2026-10-01
+- **Data:** `shops` (store, storefront domain, product in Shopify product-JSON shape, match settings, admin key hash) and `assets` (stylist portfolio photos, base64 text for driver portability).
+- **Onboarding:** `POST /api/shops` fetches `https://<store>/products/<handle>.js` server-side with SSRF guards (https only, public DNS only, no redirects, 8 s timeout, 2 MB cap) and stores the normalized product.
+- **Flow:** shopper chooses length + colour family → the same four-selfie capture (`/api/analyses` with `shop`, features: type, density, length) → `matchExtensions()` (pure, tested) picks the variant and pack count → `/api/tryon-ext` runs YouCam `hair-ext` with the template for the matched length → **Add to cart** = Shopify cart permalink `/cart/<variant>:<qty>` on the store's own domain.
+- **Embedding:** `/embed/m/<store>` (iframe, auto-resizing via `postMessage`) loaded by `public/embed.js` from a `data-fairchair-shop` element — e.g. a Shopify Custom Liquid block.
+- **Guided capture:** YouCam JS Camera Kit (`hairlength` → `hairtype` → `hairdensity`) in the browser; the step-back shot (`full` view) feeds length when present.

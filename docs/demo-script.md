@@ -23,7 +23,7 @@
 **VO (capture):** "YouCam's own guided camera takes the angles its detectors need."
 **VO (receipt):** "Every line says why: plus forty-five minutes because YouCam measured high density. Curl pattern adds prep *time*, never a surcharge."
 **Screen:** "See it on you" → the stylist's own braids on the client (live badge) → slot picker (only times that fit) → receipt.
-**VO:** "She sees this stylist's actual work on herself, books a slot that fits the whole job, and both sides keep the same receipt."
+**VO:** "The client sees this stylist's actual work on themselves, books a slot that fits the whole job, and both sides keep the same receipt."
 
 ### 1:22–1:42 · The surprise
 **Screen:** `/compare` — Maya vs Nia; zoom to the summary strip → the fairness card.
@@ -31,7 +31,7 @@
 
 ### 1:42–2:12 · The same measurement, on a store
 **Screen:** `/store-demo` → scroll to "Find my match" → 20", Black → demo client → match card (Kinky Straight · 24" · 5 packs, each with its reason) → extension try-on → the Shopify cart link.
-**VO:** "Opened hair can't be returned. On an extension store, the same measurements pick the texture, the length — with shrinkage — and how many packs, show it in her own texture, and hand off to the store's Shopify checkout. A store connects by pasting a product link."
+**VO:** "Opened hair can't be returned. On an extension store, the same measurements pick the texture, the length — with shrinkage — and how many packs, show it in the shopper's own texture, and hand off to the store's Shopify checkout. A store connects by pasting a product link."
 
 ### 2:12–2:32 · Stylist, evidence, business
 **Screen:** studio dashboard → portfolio upload → calendar (sized block) → Accuracy tab after logging a time → evidence card: "Hair type within one band 6/6 · 8/8 repeat runs identical · quote in 18 s · 7 units ≈ $0.38 · hair colour misread dark hair → shoppers choose colour".
