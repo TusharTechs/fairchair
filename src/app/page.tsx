@@ -1,4 +1,7 @@
-import { TwoHeads } from "@/components/two-heads";
+import { TwoHeads, demoMeasurements } from "@/components/two-heads";
+import { DEMO_SHOP_PRODUCT_JSON } from "@/data/demo-shop";
+import { money } from "@/lib/format";
+import { matchExtensions, productFromShopifyJson } from "@/lib/matching/extensions";
 import { ButtonLink, Card, Eyebrow, MeasuredChip, SiteHeader } from "@/components/ui";
 import { DEMO_ADMIN_TOKEN, DEMO_STUDIO_SLUG } from "@/lib/db/seed";
 import { studioBySlug } from "@/lib/studios";
@@ -22,6 +25,9 @@ export default async function Home() {
       <SiteHeader
         right={
           <>
+            <ButtonLink href="#stores" variant="ghost" className="hidden sm:inline-flex">
+              For stores
+            </ButtonLink>
             <ButtonLink href={`/studio/${DEMO_STUDIO_SLUG}?key=${DEMO_ADMIN_TOKEN}`} variant="ghost" className="hidden sm:inline-flex">
               Stylist view
             </ButtonLink>
@@ -168,6 +174,9 @@ export default async function Home() {
           </Card>
         </section>
 
+        {/* For extension stores */}
+        <StoresSection />
+
         {/* CTA */}
         <section className="border-t border-line bg-ink text-surface">
           <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-4 py-14 sm:px-6 md:flex-row md:items-center md:justify-between">
@@ -224,5 +233,68 @@ function Step({ n, title, body }: { n: string; title: string; body: string }) {
       <h3 className="mt-4 font-display text-xl font-bold">{title}</h3>
       <p className="mt-2 text-ink-2">{body}</p>
     </div>
+  );
+}
+
+function StoresSection() {
+  // A real match, computed by the engine from Nia's recorded YouCam measurements.
+  const product = productFromShopifyJson(DEMO_SHOP_PRODUCT_JSON);
+  const match = matchExtensions(product, demoMeasurements("nia", ["type", "density", "length"]), 20, undefined, "black");
+  const v = match.variant!;
+  return (
+    <section id="stores" className="scroll-mt-20 border-t border-line bg-surface">
+      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.1fr_0.9fr]">
+        <div>
+          <Eyebrow>For hair-extension & wig stores</Eyebrow>
+          <h2 className="mt-3 font-display text-4xl font-extrabold leading-tight">Opened hair can&apos;t be returned. Match it before checkout.</h2>
+          <p className="mt-4 text-lg text-ink-2">
+            The same measurements answer every extension shopper&apos;s question — which texture, what length, how many packs. “Find my match” picks
+            the right variant of <em>your</em> Shopify product, previews it blended into the shopper&apos;s own hair with YouCam, and sends them to
+            your checkout.
+          </p>
+          <ul className="mt-5 space-y-2 text-ink-2">
+            <li>• Texture from curl pattern, packs from density, length with shrinkage allowance</li>
+            <li>• Extension try-on that keeps the shopper&apos;s own texture (YouCam hair extension)</li>
+            <li>• Paste a product link to connect — no Shopify app, one Custom Liquid block</li>
+          </ul>
+          <div className="mt-7 flex flex-wrap gap-3">
+            <ButtonLink href="/store-demo" size="lg">
+              See it on a store
+            </ButtonLink>
+            <ButtonLink href="/shops/new" size="lg" variant="secondary">
+              Connect your Shopify product
+            </ButtonLink>
+          </div>
+        </div>
+        <Card className="overflow-hidden">
+          <div className="flex gap-4 p-5">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/demo/extensions/coily-long-full-all_length_2.jpg" alt="Extensions previewed on Nia (AI-generated demo client)" className="h-40 w-30 shrink-0 rounded-xl object-cover" />
+            <div className="min-w-0">
+              <p className="text-xs uppercase tracking-[0.14em] text-muted">Nia&apos;s match</p>
+              <p className="mt-1 font-display text-xl font-bold leading-tight">{v.title}</p>
+              <p className="tabular mt-1 text-sm text-ink-2">
+                {match.quantity} packs · {money((v.price * match.quantity) / 100)}
+              </p>
+            </div>
+          </div>
+          <ul className="divide-y divide-line border-t border-line px-5">
+            {match.reasons.map((r) => (
+              <li key={r.what} className="flex flex-wrap items-center justify-between gap-2 py-2.5 text-sm">
+                <span>
+                  <span className="text-muted">{r.what}</span> <strong>{r.choice}</strong>
+                </span>
+                {r.measured ? (
+                  <MeasuredChip>{r.because.length > 44 ? `${r.because.slice(0, 44)}…` : r.because}</MeasuredChip>
+                ) : (
+                  <span className="text-xs text-ink-2">{r.because.split(" (")[0]}</span>
+                )}
+              </li>
+            ))}
+          </ul>
+          <p className="border-t border-line bg-surface-2/60 px-5 py-3 font-mono text-[0.7rem] text-muted">→ /cart/{v.id}:{match.quantity} on the store&apos;s own Shopify checkout</p>
+        </Card>
+      </div>
+    </section>
   );
 }

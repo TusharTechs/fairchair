@@ -304,6 +304,15 @@ function CaptureSlot(props: {
   );
 }
 
+// Shown while each YouCam measurement runs: what it will decide.
+const DECIDES: Record<string, string> = {
+  "hair-type": "Decides prep time and which texture blends",
+  "hair-density": "Decides parting time and how many packs",
+  "hair-length": "Decides the length tier and what to order",
+  "hair-frizz": "Decides smoothing time",
+  "hair-color": "Suggests a colour family",
+};
+
 export function Analysing({ analysis }: { analysis?: AnalysisView }) {
   const tasks = analysis?.tasks ?? [];
   return (
@@ -321,7 +330,10 @@ export function Analysing({ analysis }: { analysis?: AnalysisView }) {
       <ul className="w-full max-w-sm divide-y divide-line rounded-2xl border border-line bg-surface text-left">
         {(tasks.length ? tasks : [{ feature: "…", label: "Uploading photos", status: "running", errorCode: null, cached: false } as TaskView]).map((t) => (
           <li key={t.feature} className="flex items-center justify-between gap-3 px-4 py-3 text-sm">
-            <span className="font-medium">{t.label}</span>
+            <span className="min-w-0">
+              <span className="block font-medium">{t.label}</span>
+              {DECIDES[t.feature] ? <span className="block text-xs text-muted">{DECIDES[t.feature]}</span> : null}
+            </span>
             <span
               className={cx(
                 "font-mono text-xs",

@@ -102,8 +102,8 @@ export function matchExtensions(
         what: "Length",
         choice: `${pick}"`,
         because: curly
-          ? `You want ${desiredInches}"; curly textures wear ~${settings.curlyExtraInches}" shorter (Hair Type: ${m.type!.term})`
-          : `You want ${desiredInches}"`,
+          ? `${desiredInches}" wanted + ${settings.curlyExtraInches}" for shrinkage (Hair Type: ${m.type!.mapping.toUpperCase().replace(" TO ", " to ")})`
+          : `${desiredInches}" wanted`,
         measured: curly,
       });
     }

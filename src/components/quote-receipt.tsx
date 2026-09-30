@@ -46,7 +46,7 @@ export function QuoteReceipt({
               className={cx(
                 "-mx-2 rounded-lg px-2 py-2.5 transition-colors",
                 hot && "bg-accent-soft",
-                zero && "opacity-60",
+                zero && "text-ink-2",
               )}
             >
               <div className="flex items-baseline gap-2 text-[0.95rem]">
@@ -57,7 +57,7 @@ export function QuoteReceipt({
                 </span>
               </div>
               <div className="mt-1 flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
-                <span className="text-xs text-muted">
+                <span className={cx("text-xs", hot ? "text-ink-2" : "text-muted")}>
                   {line.because.type === "measurement" ? (
                     <MeasuredChip>{line.because.youcam}</MeasuredChip>
                   ) : line.because.type === "reported" ? (
@@ -71,7 +71,7 @@ export function QuoteReceipt({
                     line.because.text
                   )}
                 </span>
-                <span className="tabular font-mono text-xs text-muted">
+                <span className={cx("tabular font-mono text-xs", hot ? "text-ink-2" : "text-muted")}>
                   {line.id === "base" ? duration(line.minutes[0]) : signedMinutes(line.minutes)}
                 </span>
               </div>
