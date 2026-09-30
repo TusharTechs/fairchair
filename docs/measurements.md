@@ -70,3 +70,8 @@ Four views of the "curly-collarbone" portrait posted to `POST /api/analyses` (kn
 - Loads without an API key; modes used: `hairlength` (1 phase, step-back), `hairtype` (3 phases: front, right, left), `hairdensity` (2 phases; the last is the lowered head).
 - **Found:** the docs name the init callback `window.YMKAsyncInit`, but sdk.js v2.5 calls `window.ymkAsyncInit` (lower-case y) — an integration written from the docs never initialises. FairChair defines both.
 - Verified in a camera-less browser: SDK loads, Camera Kit mounts, camera request → `cameraFailed` (`error_permission_denied`) → friendly fallback to manual upload. Real capture to be verified on a phone.
+
+## Run 7 — 2026-10-01 · first real person, real phone (guided camera, production)
+- Guided capture completed all three Camera Kit steps on an iPhone after fixing two integration bugs (live view mounted off-screen; a late `closed` event cancelling the next step).
+- **Hair Density: Medium (1.96/3)** — the first density reading on a real photo (synthetic chin-down views were always rejected). **Hair Length: "above the ears".**
+- Hair Type and Frizziness: `error_face_angle_invalid`. Hypothesis: mirrored front-camera images / capture order deliver "right" as the left view. Fix shipped: retry once with sides swapped; YouCam's error message is now shown to the client for diagnosis.
