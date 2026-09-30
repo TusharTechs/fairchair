@@ -12,6 +12,7 @@ import { accuracySummary, applySuggestion, suggestions, type Suggestion } from "
 import { quote as computeQuote } from "@/lib/pricing/engine";
 import { applyFairnessFix, findTextureSurcharges } from "@/lib/pricing/fairness";
 import { BUCKETS, BUCKET_LABELS, type Quote, type QuoteOptions, type Service, type Studio } from "@/lib/pricing/types";
+import { prepareImage } from "@/lib/client/image";
 import { formatInZone, zonedDate } from "@/lib/time";
 import { FEATURES, featuresFor, mergeMeasurements } from "@/lib/youcam/features";
 
@@ -381,13 +382,32 @@ function Menu({
       </div>
 
       {services.map((service) => (
-        <ServiceEditor key={service.id} studio={studio} service={service} onChange={(fn) => update(service.id, fn)} />
+        <ServiceEditor
+          key={service.id}
+          studio={studio}
+          service={service}
+          token={token}
+          isDemo={isDemo}
+          onChange={(fn) => update(service.id, fn)}
+        />
       ))}
     </div>
   );
 }
 
-function ServiceEditor({ studio, service, onChange }: { studio: Studio; service: Service; onChange: (fn: (s: Service) => Service) => void }) {
+function ServiceEditor({
+  studio,
+  service,
+  token,
+  isDemo,
+  onChange,
+}: {
+  studio: Studio;
+  service: Service;
+  token: string;
+  isDemo: boolean;
+  onChange: (fn: (s: Service) => Service) => void;
+}) {
   const issues = findTextureSurcharges(studio, service);
   const [head, setHead] = useState(demoHeads[1]?.id);
   const firstKey = Object.keys(service.basePrice)[0];
@@ -491,6 +511,8 @@ function ServiceEditor({ studio, service, onChange }: { studio: Studio; service:
           </tbody>
         </table>
       </div>
+      <PortfolioEditor studio={studio} service={service} token={token} isDemo={isDemo} onChange={onChange} />
+
       <details className="mt-3 text-sm">
         <summary className="cursor-pointer text-muted hover:text-ink">Base prices and times</summary>
         <div className="mt-3 grid gap-2 sm:grid-cols-2">
@@ -526,6 +548,110 @@ function ServiceEditor({ studio, service, onChange }: { studio: Studio; service:
         </div>
       </details>
     </Card>
+  );
+}
+
+function PortfolioEditor({
+  studio,
+  service,
+  token,
+  isDemo,
+  onChange,
+}: {
+  studio: Studio;
+  service: Service;
+  token: string;
+  isDemo: boolean;
+  onChange: (fn: (s: Service) => Service) => void;
+}) {
+  const [file, setFile] = useState<{ blob: Blob; url: string }>();
+  const [caption, setCaption] = useState("");
+  const [consent, setConsent] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<string>();
+  const current = service.portfolio;
+
+  return (
+    <div className="mt-5 rounded-xl border border-line bg-bg p-4">
+      <div className="flex flex-wrap items-start gap-4">
+        <div className="h-28 w-21 shrink-0 overflow-hidden rounded-lg border border-line bg-surface-2">
+          {file || current ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={file?.url ?? current!.image} alt={current?.caption ?? "New portfolio photo"} className="h-full w-full object-cover" />
+          ) : (
+            <div className="flex h-full items-center justify-center p-2 text-center text-[0.65rem] text-muted">No photo yet</div>
+          )}
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold">Try-on photo</p>
+          <p className="text-sm text-ink-2">
+            A photo of <em>your</em> finished {service.name.toLowerCase()}. Clients preview this exact style on themselves before paying a deposit
+            (YouCam hair try-on).
+          </p>
+          {current ? <p className="mt-1 text-xs text-muted">Current: {current.caption}</p> : null}
+          {isDemo ? (
+            <p className="mt-2 text-xs text-muted">Uploading is off in the demo studio.</p>
+          ) : (
+            <div className="mt-3 flex flex-col gap-2">
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/heic,image/heif,image/webp"
+                aria-label={`Try-on photo for ${service.name}`}
+                onChange={async (e) => {
+                  const f = e.target.files?.[0];
+                  if (!f) return;
+                  setMsg(undefined);
+                  try {
+                    const prepared = await prepareImage(f, { maxSide: 1024 });
+                    setFile({ blob: prepared.blob, url: URL.createObjectURL(prepared.blob) });
+                  } catch (err) {
+                    setMsg((err as Error).message);
+                  }
+                }}
+                className="text-sm file:mr-3 file:rounded-full file:border file:border-line-strong file:bg-surface file:px-3 file:py-1.5 file:text-sm file:font-medium"
+              />
+              <input
+                value={caption}
+                onChange={(e) => setCaption(e.target.value)}
+                placeholder={`e.g. Medium knotless, mid-back`}
+                aria-label="Caption"
+                className="h-9 rounded-lg border border-line-strong bg-surface px-3 text-sm"
+              />
+              <label className="flex items-start gap-2 text-xs text-ink-2">
+                <input type="checkbox" className="mt-0.5 accent-[var(--accent)]" checked={consent} onChange={(e) => setConsent(e.target.checked)} />
+                This is my work and I have the pictured person&apos;s permission to use the photo.
+              </label>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="secondary"
+                  disabled={!file || !consent || busy}
+                  onClick={async () => {
+                    if (!file) return;
+                    setBusy(true);
+                    const fd = new FormData();
+                    fd.set("token", token);
+                    fd.set("service", service.id);
+                    fd.set("caption", caption);
+                    fd.set("consent", "yes");
+                    fd.append("image", file.blob, "portfolio.jpg");
+                    const res = await fetch(`/api/studios/${studio.slug}/portfolio`, { method: "POST", body: fd });
+                    const data = await res.json().catch(() => ({}));
+                    setBusy(false);
+                    if (!res.ok) return setMsg(data?.error?.message ?? "Upload failed.");
+                    onChange((s) => ({ ...s, portfolio: { image: data.image, caption: data.caption }, preview: "hair-transfer" }));
+                    setFile(undefined);
+                    setMsg("Saved — clients can now preview this style.");
+                  }}
+                >
+                  {busy ? "Uploading…" : "Save try-on photo"}
+                </Button>
+                {msg ? <span className="text-xs text-muted">{msg}</span> : null}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 

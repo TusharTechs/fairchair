@@ -22,6 +22,13 @@
       "when": 1790740283625,
       "tag": "0002_retry_and_file_ids",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1790744927752,
+      "tag": "0003_assets",
+      "breakpoints": true
     }
   ]
 }

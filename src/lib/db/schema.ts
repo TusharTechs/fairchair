@@ -1,4 +1,6 @@
 import { boolean, integer, jsonb, pgTable, real, serial, text, timestamp, index } from "drizzle-orm/pg-core";
+
+
 import type { Measurements } from "@/lib/hair/measurements";
 import type { Quote, QuoteOptions, Service } from "@/lib/pricing/types";
 
@@ -93,3 +95,17 @@ export const events = pgTable("events", {
   props: jsonb("props").$type<Record<string, unknown>>().notNull().default({}),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+/** Small images owned by a studio (portfolio photos used as try-on references). */
+export const assets = pgTable(
+  "assets",
+  {
+    id: text("id").primaryKey(),
+    studioId: text("studio_id").notNull(),
+    contentType: text("content_type").notNull(),
+    /** Image bytes, base64 (portable across the Neon HTTP and PGlite drivers). */
+    data: text("data").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("assets_studio_idx").on(t.studioId)],
+);
