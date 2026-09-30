@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import { HairCard } from "@/components/hair-card";
 import { optionSummary, QuoteReceipt } from "@/components/quote-receipt";
 import { Button, Card, Eyebrow, MeasuredChip, SourceBadge, cx, type ResultSource } from "@/components/ui";
@@ -721,9 +721,14 @@ function Accuracy({ services, quotes, onApply }: { services: Service[]; quotes: 
 
 function Share({ studio, token, isDemo }: { studio: Studio; token: string; isDemo: boolean }) {
   const [copied, setCopied] = useState<string>();
-  const origin = typeof window !== "undefined" ? window.location.origin : "";
+  const origin = useSyncExternalStore(
+    () => () => {},
+    () => window.location.origin,
+    () => "",
+  );
   const client = `${origin}/s/${studio.slug}`;
   const admin = `${origin}/studio/${studio.slug}?key=${token}`;
+  const embed = `<div data-fairchair="${studio.slug}"></div>\n<script src="${origin}/embed.js" async></script>`;
   const copy = async (label: string, text: string) => {
     await navigator.clipboard.writeText(text);
     setCopied(label);
@@ -737,6 +742,17 @@ function Share({ studio, token, isDemo }: { studio: Studio; token: string; isDem
         <p className="mt-3 break-all rounded-xl bg-surface-2 px-3 py-2 font-mono text-sm">{client}</p>
         <Button className="mt-3" variant="secondary" onClick={() => copy("client", client)}>
           {copied === "client" ? "Copied" : "Copy link"}
+        </Button>
+      </Card>
+      <Card className="p-5 md:col-span-2">
+        <Eyebrow>Embed on your website</Eyebrow>
+        <p className="mt-2 text-sm text-ink-2">
+          Paste this where you want the quote flow on your own site or booking page (Squarespace, Wix, WordPress, a Shopify page). It resizes
+          itself and can use the camera.
+        </p>
+        <pre className="mt-3 overflow-x-auto rounded-xl bg-surface-2 px-3 py-2 font-mono text-xs">{embed}</pre>
+        <Button className="mt-3" variant="secondary" onClick={() => copy("embed", embed)}>
+          {copied === "embed" ? "Copied" : "Copy embed code"}
         </Button>
       </Card>
       <Card className="p-5">
