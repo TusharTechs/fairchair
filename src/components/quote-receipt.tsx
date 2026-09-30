@@ -52,7 +52,7 @@ export function QuoteReceipt({
               <div className="flex items-baseline gap-2 text-[0.95rem]">
                 <span className={cx("font-medium", line.id === "base" && "font-semibold")}>{line.label}</span>
                 <span className="leader" />
-                <span className="tabular font-mono font-semibold">
+                <span className="tabular shrink-0 whitespace-nowrap font-mono font-semibold">
                   {line.id === "base" ? money(line.price[0], currency) : signedMoneyRange(line.price, currency)}
                 </span>
               </div>
@@ -81,12 +81,12 @@ export function QuoteReceipt({
       </ol>
 
       <div className="border-t border-line bg-surface-2/60 px-5 py-4 sm:px-6">
-        <div className="flex items-end justify-between gap-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
           <div>
             <p className="text-xs uppercase tracking-[0.14em] text-muted">Your price</p>
-            <p className="tabular font-display text-3xl font-extrabold">{moneyRange(quote.price, currency)}</p>
+            <p className="tabular whitespace-nowrap font-display text-3xl font-extrabold">{moneyRange(quote.price, currency)}</p>
           </div>
-          <div className="text-right">
+          <div className="sm:text-right">
             <p className="text-xs uppercase tracking-[0.14em] text-muted">Chair time</p>
             <p className="tabular font-display text-xl font-bold">{durationRange(quote.minutes)}</p>
           </div>

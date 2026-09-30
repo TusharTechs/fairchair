@@ -277,10 +277,24 @@ function ResultStep(props: {
       <Card className="p-5">
         <HairCard measurements={props.analysis.measurements} />
         {failed.length ? (
-          <p className="mt-4 rounded-xl bg-warn-soft px-4 py-3 text-sm text-ink-2">
-            {failed.map((f) => f.label).join(", ")} couldn&apos;t be read ({guidanceFor(failed[0].errorCode ?? undefined)}). Your range is
-            wider to cover it.
-          </p>
+          <div className="mt-4 rounded-xl bg-warn-soft px-4 py-3 text-sm text-ink-2">
+            <p>
+              {failed.map((f) => f.label).join(", ")} couldn&apos;t be read ({guidanceFor(failed[0].errorCode ?? undefined)}). Your range is
+              wider to cover it.
+            </p>
+            <details className="mt-2 text-xs">
+              <summary className="cursor-pointer">What YouCam reported</summary>
+              <ul className="mt-1 space-y-0.5 font-mono">
+                {failed.map((f) => (
+                  <li key={f.feature}>
+                    {f.label}: {f.errorCode}
+                    {f.errorMessage ? ` — ${f.errorMessage}` : ""}
+                    {f.attempts && f.attempts > 1 ? ` (after ${f.attempts} attempts)` : ""}
+                  </li>
+                ))}
+              </ul>
+            </details>
+          </div>
         ) : null}
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4 text-sm">
           <span className="text-ink-2">Doesn&apos;t look right?</span>

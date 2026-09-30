@@ -14,7 +14,9 @@ export function moneyRange([lo, hi]: Range, currency = "USD"): string {
 export function signedMoneyRange([lo, hi]: Range, currency = "USD"): string {
   if (Math.round(lo) === 0 && Math.round(hi) === 0) return "—";
   const fmt = (v: number) => `${v >= 0 ? "+" : "−"}${SYMBOL[currency] ?? ""}${Math.round(Math.abs(v))}`;
-  return Math.round(lo) === Math.round(hi) ? fmt(lo) : `${fmt(lo)} to ${fmt(hi)}`;
+  if (Math.round(lo) === Math.round(hi)) return fmt(lo);
+  // Same sign: "+$0–20"; mixed: "−$7 to +$30".
+  return lo >= 0 || hi <= 0 ? `${fmt(lo)}–${Math.round(Math.abs(hi))}` : `${fmt(lo)} to ${fmt(hi)}`;
 }
 
 export function duration(min: number): string {
@@ -31,5 +33,7 @@ export function durationRange([lo, hi]: Range): string {
 export function signedMinutes([lo, hi]: Range): string {
   if (lo === 0 && hi === 0) return "no change";
   const fmt = (v: number) => `${v >= 0 ? "+" : "−"}${Math.abs(v)} min`;
-  return lo === hi ? fmt(lo) : `${fmt(lo)} to ${fmt(hi)}`;
+  if (lo === hi) return fmt(lo);
+  const sign = (v: number) => (v >= 0 ? "+" : "−");
+  return lo >= 0 || hi <= 0 ? `${sign(lo)}${Math.abs(lo)}–${Math.abs(hi)} min` : `${fmt(lo)} to ${fmt(hi)}`;
 }

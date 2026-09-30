@@ -189,7 +189,15 @@ export type AnalysisView = {
   source: AnalysisSource;
   status: "running" | "done" | "failed";
   demoClientId: string | null;
-  tasks: { feature: AnalysisFeature; label: string; status: "running" | "success" | "error"; errorCode: string | null; cached: boolean }[];
+  tasks: {
+    feature: AnalysisFeature;
+    label: string;
+    status: "running" | "success" | "error";
+    errorCode: string | null;
+    errorMessage: string | null;
+    cached: boolean;
+    attempts: number;
+  }[];
   measurements: Measurements;
 };
 
@@ -227,7 +235,9 @@ export async function getAnalysis(id: string): Promise<AnalysisView | undefined>
       label: FEATURES[t.feature as AnalysisFeature].label,
       status: t.status,
       errorCode: t.errorCode,
+      errorMessage: t.status === "error" ? ((t.raw as { message?: string } | null)?.message ?? null) : null,
       cached: t.cached,
+      attempts: t.attempts,
     })),
   };
 }
@@ -268,24 +278,29 @@ async function advance(task: typeof schema.analysisTasks.$inferSelect) {
       return;
     }
     if (state.status === "error") {
-      // YouCam's transient engine errors are free to retry; retry once.
-      if (TRANSIENT.has(state.code) && task.attempts < 2) {
+      // Errors cost no units. Retry once for transient engine errors, and for
+      // an angle rejection on the three-view detectors retry with the side
+      // views swapped: front cameras mirror images and capture order varies,
+      // so "turned right" can arrive as the left view.
+      const swap = state.code === "error_face_angle_invalid" && (feature === "hair-type" || feature === "hair-frizz");
+      if ((TRANSIENT.has(state.code) || swap) && task.attempts < 2) {
         const [analysis] = await db.select().from(schema.analyses).where(eq(schema.analyses.id, task.analysisId));
         const fileIds = analysis.fileIds as Record<string, string>;
-        const ids = viewsFor(feature, fileIds).map((v) => fileIds[v]);
+        let ids = viewsFor(feature, fileIds).map((v) => fileIds[v]);
+        if (swap) ids = [ids[0], ids[2], ids[1]];
         if (ids.every(Boolean)) {
           const retryId = await startTask(feature, ids);
           await db
             .update(schema.analysisTasks)
             .set({ youcamTaskId: retryId, attempts: task.attempts + 1, startedAt: new Date() })
             .where(eq(schema.analysisTasks.id, task.id));
-          log("youcam.task_retry", { feature, code: state.code });
+          log("youcam.task_retry", { feature, code: state.code, swapped: swap });
           return;
         }
       }
       await db
         .update(schema.analysisTasks)
-        .set({ status: "error", errorCode: state.code, finishedAt: new Date() })
+        .set({ status: "error", errorCode: state.code, raw: { error: state.code, message: state.message ?? null }, finishedAt: new Date() })
         .where(eq(schema.analysisTasks.id, task.id));
       return;
     }

@@ -12,7 +12,15 @@ import { VIEWS, type View } from "@/lib/youcam/features";
 // four-selfie capture, consent, live/demo choice, and the measuring screen.
 
 export type Demo = { id: string; name: string; blurb: string; photo?: string; source: "sample" | "replay"; recordedAt?: string };
-export type TaskView = { feature: string; label: string; status: "running" | "success" | "error"; errorCode: string | null; cached: boolean };
+export type TaskView = {
+  feature: string;
+  label: string;
+  status: "running" | "success" | "error";
+  errorCode: string | null;
+  errorMessage?: string | null;
+  cached: boolean;
+  attempts?: number;
+};
 export type AnalysisView = {
   id: string;
   source: ResultSource;

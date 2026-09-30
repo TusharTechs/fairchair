@@ -147,3 +147,14 @@ describe("supplies", () => {
     expect(shadeSuggestion("#123456")).toBeUndefined();
   });
 });
+
+describe("compact range formatting", async () => {
+  const { signedMinutes, signedMoneyRange } = await import("@/lib/format");
+  it("uses en dashes for same-sign ranges and words for mixed ranges", () => {
+    expect(signedMoneyRange([0, 20])).toBe("+$0–20");
+    expect(signedMoneyRange([-7, 30])).toBe("−$7 to +$30");
+    expect(signedMinutes([0, 30])).toBe("+0–30 min");
+    expect(signedMinutes([-20, 45])).toBe("−20 min to +45 min");
+    expect(signedMinutes([15, 15])).toBe("+15 min");
+  });
+});
