@@ -62,11 +62,11 @@ export function PhotoStep(props: {
     };
     try {
       setGuided({ step: 1, label: "Step back so your hair falls over your shoulders" });
-      const full = await captureWithCameraKit("hairlength");
+      const full = await captureWithCameraKit("hairlength", { step: "Step 1 of 3", label: "Step back so your hair falls over your shoulders" });
       if (full.length) await add("full", toFile(full[full.length - 1].blob, "full.jpg"));
 
       setGuided({ step: 2, label: "Face the camera, then turn right and left when asked" });
-      const angles = await captureWithCameraKit("hairtype");
+      const angles = await captureWithCameraKit("hairtype", { step: "Step 2 of 3", label: "Face the camera, then turn right and left when asked" });
       if (angles.length >= 3) {
         const front = await add("front", toFile(angles[0].blob, "front.jpg"));
         await add("right", toFile(angles[1].blob, "right.jpg"), front);
@@ -74,7 +74,7 @@ export function PhotoStep(props: {
       }
 
       setGuided({ step: 3, label: "Lower your chin so your hairline faces the camera" });
-      const down = await captureWithCameraKit("hairdensity");
+      const down = await captureWithCameraKit("hairdensity", { step: "Step 3 of 3", label: "Lower your chin so your hairline faces the camera" });
       if (down.length) await add("down", toFile(down[down.length - 1].blob, "down.jpg"));
     } catch (e) {
       const message = (e as Error).message;

@@ -25,14 +25,18 @@ export default async function Home() {
       <SiteHeader
         right={
           <>
-            <ButtonLink href="#stores" variant="ghost" className="hidden sm:inline-flex">
-              For stores
-            </ButtonLink>
-            <ButtonLink href={`/studio/${DEMO_STUDIO_SLUG}?key=${DEMO_ADMIN_TOKEN}`} variant="ghost" className="hidden sm:inline-flex">
-              Stylist view
-            </ButtonLink>
-            <ButtonLink href="/start" variant="secondary">
-              Set up your studio
+            {/* Wrapped so `hidden` isn't overridden by the button's own inline-flex. */}
+            <span className="hidden items-center gap-1 sm:flex">
+              <ButtonLink href="#stores" variant="ghost">
+                For stores
+              </ButtonLink>
+              <ButtonLink href={`/studio/${DEMO_STUDIO_SLUG}?key=${DEMO_ADMIN_TOKEN}`} variant="ghost">
+                Stylist view
+              </ButtonLink>
+            </span>
+            <ButtonLink href="/start" variant="secondary" className="whitespace-nowrap">
+              <span className="sm:hidden">Set up studio</span>
+              <span className="hidden sm:inline">Set up your studio</span>
             </ButtonLink>
           </>
         }

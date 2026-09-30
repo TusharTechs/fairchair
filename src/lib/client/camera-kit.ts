@@ -1,6 +1,10 @@
 // YouCam JS Camera Kit (v2.5): guided capture with live face-quality checks.
 // No API key is used in the browser; captured photos are uploaded through our
 // server like any other photo. Docs: docs.perfectcorp.com → "JS Camera Kit".
+//
+// The Camera Kit renders its live view *inside* #YMK-module, so FairChair shows
+// that element in a full-screen overlay (with a step label and Cancel) while
+// the camera is open. The node is created once and reused across sessions.
 
 const SDK_URL = "https://plugins-media.makeupar.com/v2.5-camera-kit/sdk.js";
 
@@ -25,14 +29,52 @@ declare global {
 
 let loading: Promise<YMKApi> | undefined;
 
+function overlay() {
+  let root = document.getElementById("fc-camera");
+  if (root) return root;
+  root = document.createElement("div");
+  root.id = "fc-camera";
+  root.setAttribute("role", "dialog");
+  root.setAttribute("aria-modal", "true");
+  root.setAttribute("aria-label", "Guided camera");
+  root.style.cssText =
+    "position:fixed;inset:0;z-index:1000;display:none;flex-direction:column;align-items:center;background:#0f0b09;color:#fff;font-family:inherit";
+  root.innerHTML = `
+    <div style="display:flex;width:100%;max-width:520px;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px">
+      <div style="min-width:0">
+        <div data-fc-step style="font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.7"></div>
+        <div data-fc-label style="font-weight:600;font-size:15px;line-height:1.3"></div>
+      </div>
+      <button type="button" data-fc-cancel style="flex-shrink:0;height:36px;padding:0 14px;border-radius:999px;border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;font-weight:600">Cancel</button>
+    </div>
+    <div id="YMK-module" style="flex:1;width:100%;max-width:520px;display:flex;justify-content:center;align-items:flex-start"></div>
+    <div style="padding:10px 16px 18px;font-size:12px;opacity:.65;text-align:center">YouCam guided camera · photos are only used to measure your hair</div>`;
+  document.body.appendChild(root);
+  return root;
+}
+
+function showOverlay(step: string, label: string, onCancel: () => void) {
+  const root = overlay();
+  root.querySelector<HTMLElement>("[data-fc-step]")!.textContent = step;
+  root.querySelector<HTMLElement>("[data-fc-label]")!.textContent = label;
+  root.querySelector<HTMLButtonElement>("[data-fc-cancel]")!.onclick = onCancel;
+  root.style.display = "flex";
+  document.documentElement.style.overflow = "hidden";
+  // Inside an embed the overlay fills the iframe; ask the host page to bring
+  // the top of the iframe into view (see public/embed.js).
+  if (window.parent !== window) window.parent.postMessage({ type: "fairchair:focus" }, "*");
+}
+
+function hideOverlay() {
+  const root = document.getElementById("fc-camera");
+  if (root) root.style.display = "none";
+  document.documentElement.style.overflow = "";
+}
+
 export function loadCameraKit(): Promise<YMKApi> {
   if (typeof window === "undefined") return Promise.reject(new Error("Camera Kit runs in the browser"));
+  overlay();
   loading ??= new Promise<YMKApi>((resolve, reject) => {
-    if (!document.getElementById("YMK-module")) {
-      const mount = document.createElement("div");
-      mount.id = "YMK-module";
-      document.body.appendChild(mount);
-    }
     const timer = window.setTimeout(() => reject(new Error("The guided camera took too long to load.")), 20_000);
     const ready = () => {
       window.clearTimeout(timer);
@@ -70,41 +112,49 @@ const CAMERA_ERRORS: Record<string, string> = {
   error_resolution_unsupported: "This camera's resolution isn't supported. Upload photos instead.",
 };
 
-/** Opens YouCam's guided camera in `mode` and resolves with the captured phases. */
-export async function captureWithCameraKit(mode: CameraMode): Promise<Captured[]> {
+/** Opens YouCam's guided camera in `mode` (full screen) and resolves with the captured phases. */
+export async function captureWithCameraKit(mode: CameraMode, ui: { step: string; label: string }): Promise<Captured[]> {
   const ymk = await loadCameraKit();
   return new Promise<Captured[]>((resolve, reject) => {
     const ids: number[] = [];
-    const cleanup = () => ids.splice(0).forEach((id) => ymk.removeEventListener(id));
+    let settled = false;
+    const finish = (fn: () => void) => {
+      if (settled) return;
+      settled = true;
+      ids.splice(0).forEach((id) => ymk.removeEventListener(id));
+      hideOverlay();
+      fn();
+    };
     ids.push(
       ymk.addEventListener("faceDetectionCaptured", async (payload) => {
-        cleanup();
         ymk.close();
         try {
           const images = (payload as { images?: { phase?: number; image: unknown; width?: number; height?: number }[] }).images ?? [];
           const out = await Promise.all(
             images.map(async (img, i) => ({ phase: img.phase ?? i, blob: await toBlob(img.image), width: img.width ?? 0, height: img.height ?? 0 })),
           );
-          resolve(out.sort((a, b) => a.phase - b.phase));
+          finish(() => resolve(out.sort((a, b) => a.phase - b.phase)));
         } catch (e) {
-          reject(e);
+          finish(() => reject(e));
         }
       }),
     );
     ids.push(
       ymk.addEventListener("cameraFailed", (code) => {
-        cleanup();
         ymk.close();
-        reject(new Error(CAMERA_ERRORS[String(code)] ?? "The camera couldn't start. Upload photos instead."));
+        finish(() => reject(new Error(CAMERA_ERRORS[String(code)] ?? "The camera couldn't start. Upload photos instead.")));
       }),
     );
-    ids.push(
-      ymk.addEventListener("closed", () => {
-        cleanup();
-        reject(new Error("closed"));
-      }),
-    );
-    ymk.init({ faceDetectionMode: mode, imageFormat: "base64", language: "enu", qualityLevel: "moderate" });
+    ids.push(ymk.addEventListener("closed", () => finish(() => reject(new Error("closed")))));
+
+    showOverlay(ui.step, ui.label, () => {
+      ymk.close();
+      finish(() => reject(new Error("closed")));
+    });
+    // Size the live view to the overlay (the SDK accepts 300–1920 px).
+    const width = Math.max(300, Math.min(520, window.innerWidth));
+    const height = Math.max(300, Math.min(900, window.innerHeight - 140));
+    ymk.init({ faceDetectionMode: mode, imageFormat: "base64", language: "enu", qualityLevel: "moderate", width, height });
     ymk.openCameraKit();
   });
 }

@@ -23,9 +23,12 @@
     frames.push(iframe);
   });
   window.addEventListener("message", function (e) {
-    if (e.origin !== origin || !e.data || e.data.type !== "fairchair:height") return;
+    if (e.origin !== origin || !e.data) return;
     frames.forEach(function (f) {
-      if (f.contentWindow === e.source) f.style.height = e.data.height + "px";
+      if (f.contentWindow !== e.source) return;
+      if (e.data.type === "fairchair:height") f.style.height = e.data.height + "px";
+      // The guided camera fills the iframe: show its top on screen.
+      if (e.data.type === "fairchair:focus") f.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   });
 })();

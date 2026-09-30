@@ -23,7 +23,7 @@ export function Logo({ className }: { className?: string }) {
 type ButtonProps = { variant?: "primary" | "secondary" | "ghost" | "inverse" | "ghost-inverse"; size?: "md" | "lg" };
 
 const buttonBase =
-  "inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50";
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50";
 const buttonVariants = {
   primary: "bg-ink text-surface hover:bg-ink-2",
   secondary: "border border-line-strong bg-surface text-ink hover:bg-surface-2",
