@@ -37,6 +37,8 @@ export function QuoteFlow({ studio, demos }: { studio: Studio; demos: Demo[] }) 
   const [analysis, setAnalysis] = useState<AnalysisView>();
   const [error, setError] = useState<string>();
   const [quoteId, setQuoteId] = useState<string>();
+  // What the try-on needs: the front photo (kept in memory only) or the demo id.
+  const [tryOnSource, setTryOnSource] = useState<{ front?: Blob; demo?: string }>({});
 
   const service = studio.services.find((s) => s.id === serviceId);
   const optionsComplete = service ? service.axes.every((a) => options[a.id]) : false;
@@ -51,6 +53,9 @@ export function QuoteFlow({ studio, demos }: { studio: Studio; demos: Demo[] }) 
   }, [studio, service, options, analysis, optionsComplete]);
 
   async function start(body: FormData) {
+    const front = body.get("front");
+    const demo = body.get("demo");
+    setTryOnSource({ front: front instanceof Blob ? front : undefined, demo: typeof demo === "string" ? demo : undefined });
     setError(undefined);
     setStep("analysing");
     setAnalysis(undefined);
@@ -126,6 +131,7 @@ export function QuoteFlow({ studio, demos }: { studio: Studio; demos: Demo[] }) 
           analysis={analysis}
           quote={preview}
           stretched={options.stretched}
+          tryOnSource={tryOnSource}
           onStretched={(tier) => setOptions((o) => ({ ...o, stretched: tier }))}
           onRetake={() => {
             setAnalysis(undefined);
@@ -515,6 +521,7 @@ function ResultStep(props: {
   analysis: AnalysisView;
   quote: ReturnType<typeof computeQuote>;
   stretched?: LengthTier;
+  tryOnSource: { front?: Blob; demo?: string };
   onStretched: (tier: LengthTier | undefined) => void;
   onRetake: () => void;
   onHold: (clientName: string) => Promise<void>;
@@ -578,6 +585,10 @@ function ResultStep(props: {
 
       <QuoteReceipt quote={props.quote} service={props.service} currency={props.studio.currency} studioName={props.studio.name} />
 
+      {props.service.portfolio && (props.tryOnSource.front || props.tryOnSource.demo) ? (
+        <TryOn studio={props.studio} service={props.service} source={props.tryOnSource} />
+      ) : null}
+
       {props.quote.supplies.length ? (
         <Card className="p-5">
           <Eyebrow>Supply list</Eyebrow>
@@ -622,6 +633,70 @@ function ResultStep(props: {
         </p>
       </Card>
     </section>
+  );
+}
+
+function TryOn({ studio, service, source }: { studio: Studio; service: Service; source: { front?: Blob; demo?: string } }) {
+  const [state, setState] = useState<
+    { kind: "idle" } | { kind: "loading" } | { kind: "done"; image: string; source: ResultSource } | { kind: "error"; message: string }
+  >({ kind: "idle" });
+  const portfolio = service.portfolio!;
+
+  async function run() {
+    setState({ kind: "loading" });
+    const fd = new FormData();
+    fd.set("studio", studio.slug);
+    fd.set("service", service.id);
+    if (source.demo) fd.set("demo", source.demo);
+    else if (source.front) fd.append("front", source.front, "front.jpg");
+    const res = await fetch("/api/tryon", { method: "POST", body: fd });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) return setState({ kind: "error", message: data?.error?.message ?? "The preview couldn't be made." });
+    setState({ kind: "done", image: data.image, source: data.source });
+  }
+
+  return (
+    <Card className="p-5">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <Eyebrow>See it on you</Eyebrow>
+        {state.kind === "done" ? <SourceBadge source={state.source} /> : null}
+      </div>
+      <div className="mt-3 grid grid-cols-2 gap-3">
+        <figure>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={portfolio.image} alt={portfolio.caption} className="aspect-[3/4] w-full rounded-xl object-cover" />
+          <figcaption className="mt-1.5 text-[0.7rem] leading-snug text-muted">{portfolio.caption}</figcaption>
+        </figure>
+        <figure>
+          <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl border border-dashed border-line-strong bg-surface-2">
+            {state.kind === "done" ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={state.image} alt="Your try-on preview" className="h-full w-full object-cover" />
+            ) : state.kind === "loading" ? (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-3 text-center">
+                <div className="scanline absolute inset-x-0 h-1/2 bg-gradient-to-b from-transparent via-measured/25 to-transparent" />
+                <span className="text-sm font-semibold">Styling your preview…</span>
+                <span className="text-xs text-muted">YouCam hair try-on · about 10 seconds</span>
+              </div>
+            ) : (
+              <button type="button" onClick={run} className="flex h-full w-full flex-col items-center justify-center gap-2 p-3 text-center">
+                <span className="text-sm font-semibold">This style, on you</span>
+                <span className="text-xs text-muted">Uses your front photo</span>
+              </button>
+            )}
+          </div>
+          <figcaption className="mt-1.5 text-[0.7rem] leading-snug text-muted">
+            {state.kind === "done" ? "A preview of the style, not a promise of the exact result. Not saved." : "Your preview appears here"}
+          </figcaption>
+        </figure>
+      </div>
+      {state.kind === "error" ? <p className="mt-3 text-sm text-danger">{state.message}</p> : null}
+      {state.kind === "idle" || state.kind === "error" ? (
+        <Button variant="secondary" className="mt-3" onClick={run}>
+          Preview {service.name.toLowerCase()} on me
+        </Button>
+      ) : null}
+    </Card>
   );
 }
 

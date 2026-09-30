@@ -52,3 +52,19 @@ export async function creditBalance(): Promise<number> {
     .filter((c) => !c.expiry || c.expiry > now)
     .reduce((sum, c) => sum + Number(c.amount_dec ?? c.amount ?? 0), 0);
 }
+
+// Generic task helpers for features outside the analysis registry (try-on).
+export async function startRawTask(path: string, body: unknown): Promise<string> {
+  const res = await youcamFetch<StartResponse>(path, { method: "POST", body });
+  const id = res.data?.task_id;
+  if (!id) throw new YouCamError({ code: "malformed_response", message: `${path}: no task_id` });
+  return id;
+}
+
+export async function pollRawTask(path: string, taskId: string): Promise<TaskState> {
+  const res = await youcamFetch<PollResponse>(`${path}/${encodeURIComponent(taskId)}`);
+  const d = res.data ?? {};
+  if (d.task_status === "success") return { status: "success", results: d.results };
+  if (d.task_status === "error") return { status: "error", code: d.error ?? "task_failed", message: d.error_message };
+  return { status: "running" };
+}

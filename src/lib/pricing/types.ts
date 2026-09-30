@@ -79,6 +79,8 @@ export type Service = {
   measures: MeasurementKey[];
   /** Whether to show a try-on preview step. */
   preview?: "hair-ext" | "hair-transfer" | "none";
+  /** The stylist's own work, used as the try-on reference (YouCam hair-transfer). */
+  portfolio?: { image: string; caption: string };
 };
 
 export type Studio = {

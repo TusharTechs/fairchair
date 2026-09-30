@@ -8,9 +8,22 @@ import { studios } from "./schema";
 export const DEMO_STUDIO_SLUG = "amara-braids-demo";
 export const DEMO_ADMIN_TOKEN = "demo";
 
+function demoServices() {
+  const knotless = createService("knotless");
+  knotless.portfolio = {
+    image: "/demo/previews/ref-knotless-medium-midback.jpg",
+    caption: "Medium knotless, mid-back — from the studio's portfolio (AI-generated for the demo)",
+  };
+  return [knotless, createService("silk-press"), createService("sew-in"), createService("tape-ins")];
+}
+
 export async function ensureDemoStudio(db: DB) {
   const existing = await db.select({ id: studios.id }).from(studios).where(eq(studios.slug, DEMO_STUDIO_SLUG));
-  if (existing.length) return;
+  if (existing.length) {
+    // The demo studio is read-only: keep it in sync with the canonical menu.
+    await db.update(studios).set({ services: demoServices() }).where(eq(studios.slug, DEMO_STUDIO_SLUG));
+    return;
+  }
   await db.insert(studios).values({
     id: "studio_demo",
     slug: DEMO_STUDIO_SLUG,
@@ -21,12 +34,7 @@ export async function ensureDemoStudio(db: DB) {
     hourlyRate: 40,
     depositPct: 0.25,
     priceByTime: true,
-    services: [
-      createService("knotless"),
-      createService("silk-press"),
-      createService("sew-in"),
-      createService("tape-ins"),
-    ],
+    services: demoServices(),
     adminTokenHash: hashSecret(DEMO_ADMIN_TOKEN),
     isDemo: true,
   });

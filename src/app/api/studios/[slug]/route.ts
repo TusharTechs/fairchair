@@ -24,6 +24,7 @@ const Service = z.object({
   supplies: z.any().optional(),
   measures: z.array(z.enum(["type", "density", "length", "frizz", "color"])),
   preview: z.enum(["hair-ext", "hair-transfer", "none"]).optional(),
+  portfolio: z.object({ image: z.string().max(500), caption: z.string().max(160) }).optional(),
 });
 const Body = z.object({
   token: z.string().min(1),
