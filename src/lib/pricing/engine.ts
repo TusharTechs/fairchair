@@ -6,7 +6,7 @@ import {
   type Measurements,
 } from "@/lib/hair/measurements";
 import { fairnessWarnings } from "./fairness";
-import { nearestShade } from "./shades";
+import { shadeSuggestion } from "./shades";
 import {
   BUCKETS,
   BUCKET_LABELS,
@@ -261,12 +261,14 @@ function supplies(service: Service, options: QuoteOptions, m: Measurements): Sup
     because: m.type ? `Hair Type: ${m.type.term}` : undefined,
   });
 
-  const shade = m.color ? nearestShade(m.color.hex) : undefined;
+  const shade = m.color ? shadeSuggestion(m.color.hex) : undefined;
   out.push({
     id: "shade",
-    label: "Closest shade",
-    detail: shade ? `#${shade.code} ${shade.name} — confirm with a swatch in daylight` : "Measure hair colour to suggest a shade",
-    because: m.color ? `Measured hair colour ${m.color.hex.toUpperCase()}` : undefined,
+    label: "Colour family",
+    detail: shade
+      ? `${shade.label} — swatch shades ${shade.shades.map((s) => `#${s}`).join(", ")} in daylight`
+      : "Match your colour in person or with a swatch",
+    because: m.color ? `Hair colour family from YouCam: ${shade?.label ?? m.color.hex.toUpperCase()}` : undefined,
   });
 
   return out;

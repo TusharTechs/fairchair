@@ -109,3 +109,19 @@ export const assets = pgTable(
   },
   (t) => [index("assets_studio_idx").on(t.studioId)],
 );
+
+/** Hair-extension stores using the "Find my match" widget. */
+export const shops = pgTable("shops", {
+  id: text("id").primaryKey(),
+  slug: text("slug").notNull().unique(),
+  name: text("name").notNull(),
+  platform: text("platform").$type<"shopify" | "demo">().notNull(),
+  /** Storefront domain used for cart permalinks. */
+  domain: text("domain").notNull(),
+  productUrl: text("product_url").notNull(),
+  product: jsonb("product").$type<import("@/lib/matching/extensions").Product>().notNull(),
+  settings: jsonb("settings").$type<import("@/lib/matching/extensions").MatchSettings>().notNull(),
+  adminTokenHash: text("admin_token_hash").notNull(),
+  isDemo: boolean("is_demo").notNull().default(false),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});

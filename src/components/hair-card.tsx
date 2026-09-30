@@ -1,5 +1,5 @@
 import { DENSITY_GRADES, FRIZZ_GRADES, HAIR_LENGTH_BANDS, HAIR_TYPE_BANDS, type Measurements } from "@/lib/hair/measurements";
-import { nearestShade } from "@/lib/pricing/shades";
+import { shadeSuggestion } from "@/lib/pricing/shades";
 import { cx } from "./ui";
 
 type Row = { key: string; label: string; api: string; value?: string; detail?: string; scale?: { at: number; of: number } };
@@ -40,13 +40,13 @@ export function hairRows(m: Measurements): Row[] {
     },
   ];
   if (m.color) {
-    const shade = nearestShade(m.color.hex);
+    const shade = shadeSuggestion(m.color.hex);
     rows.push({
       key: "color",
-      label: "Hair colour",
-      api: "Skin Tone Analysis · hair_color",
-      value: shade ? `Close to #${shade.code}` : m.color.hex.toUpperCase(),
-      detail: `${m.color.hex.toUpperCase()}${shade ? ` · ${shade.name}` : ""}`,
+      label: "Colour family",
+      api: "Facial Color Tones · hair_color",
+      value: shade ? shade.label : m.color.hex.toUpperCase(),
+      detail: `${m.color.hex.toUpperCase()}${shade ? ` · swatch #${shade.shades.join(", #")}` : ""}`,
     });
   }
   return rows;

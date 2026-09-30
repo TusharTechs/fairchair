@@ -8,7 +8,7 @@ import {
 } from "@/lib/hair/measurements";
 import { quote } from "../engine";
 import { applyFairnessFix, findTextureSurcharges } from "../fairness";
-import { nearestShade } from "../shades";
+import { familyFromHex, shadeSuggestion } from "../shades";
 import { createService } from "../templates";
 import type { Studio } from "../types";
 
@@ -135,15 +135,15 @@ describe("fairness", () => {
 describe("supplies", () => {
   it("sizes tape-in packs from measured density and suggests texture + shade", () => {
     const tape = studio.services[2];
-    const q = quote(studio, tape, { length: "20" }, { ...headB, color: { kind: "color", hex: "#1c1613" } });
+    const q = quote(studio, tape, { length: "20" }, { ...headB, color: { kind: "color", hex: "#000000" } });
     expect(q.supplies.find((s) => s.id === "tape-ins")?.quantity).toEqual([6, 7]);
     expect(q.supplies.find((s) => s.id === "order-length")?.detail).toContain("22–24");
     expect(q.supplies.find((s) => s.id === "shade")?.detail).toContain("#1B");
   });
 
-  it("maps hair colour hexes to the nearest industry shade", () => {
-    expect(nearestShade("#e0cc9f")?.code).toBe("613");
-    expect(nearestShade("#0a0a0a")?.code).toBe("1");
-    expect(nearestShade("nope")).toBeUndefined();
+  it("treats YouCam's hair colour as a family with shades to swatch, never an exact shade", () => {
+    expect(familyFromHex("#FAF0BE")).toBe("blonde");
+    expect(shadeSuggestion("#42280E")?.shades).toEqual(["2", "4", "6"]);
+    expect(shadeSuggestion("#123456")).toBeUndefined();
   });
 });

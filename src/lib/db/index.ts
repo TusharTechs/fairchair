@@ -38,8 +38,9 @@ async function connect(): Promise<DB> {
 export async function getDb(): Promise<DB> {
   g.__fairchairDb ??= connect()
     .then(async (db) => {
-      const { ensureDemoStudio } = await import("./seed");
+      const { ensureDemoShop, ensureDemoStudio } = await import("./seed");
       await ensureDemoStudio(db);
+      await ensureDemoShop(db);
       return db;
     })
     .catch((e) => {

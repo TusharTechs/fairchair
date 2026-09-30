@@ -1,0 +1,23 @@
+{
+  "portrait": "kinky-chest-stretched",
+  "ranAt": "2026-09-30T05:17:26.252Z",
+  "color": {
+    "color": {
+      "eye_color": "#0d100d",
+      "eye_color_name": "Brown",
+      "lip_color": "#d19a92",
+      "eyebrow_color": "#543931",
+      "skin_color": "#896349",
+      "hair_color": "#FAF0BE",
+      "hair_color_name": "Blonde"
+    },
+    "face_quality": {
+      "has_face": true,
+      "area": "good",
+      "frontal": "good",
+      "lighting": "good",
+      "faceangle": "good"
+    }
+  },
+  "ext": "saved"
+}

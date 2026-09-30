@@ -1,0 +1,23 @@
+{
+  "portrait": "coily-short",
+  "ranAt": "2026-09-30T05:16:41.760Z",
+  "color": {
+    "color": {
+      "eye_color": "#0f1310",
+      "eye_color_name": "Brown",
+      "lip_color": "#b9898a",
+      "eyebrow_color": "#543931",
+      "skin_color": "#73513a",
+      "hair_color": "#FAF0BE",
+      "hair_color_name": "Blonde"
+    },
+    "face_quality": {
+      "has_face": true,
+      "area": "good",
+      "frontal": "good",
+      "lighting": "good",
+      "faceangle": "good"
+    }
+  },
+  "ext": "saved"
+}

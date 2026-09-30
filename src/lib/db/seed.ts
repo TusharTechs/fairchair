@@ -1,9 +1,11 @@
 import "server-only";
 import { eq } from "drizzle-orm";
+import { DEMO_SHOP, DEMO_SHOP_PRODUCT_JSON } from "@/data/demo-shop";
+import { DEFAULT_MATCH_SETTINGS, productFromShopifyJson } from "@/lib/matching/extensions";
 import { createService } from "@/lib/pricing/templates";
 import { hashSecret } from "@/lib/security";
 import type { DB } from "./index";
-import { studios } from "./schema";
+import { shops, studios } from "./schema";
 
 export const DEMO_STUDIO_SLUG = "amara-braids-demo";
 export const DEMO_ADMIN_TOKEN = "demo";
@@ -43,4 +45,20 @@ export async function ensureDemoStudio(db: DB) {
     adminTokenHash: hashSecret(DEMO_ADMIN_TOKEN),
     isDemo: true,
   });
+}
+
+export async function ensureDemoShop(db: DB) {
+  const values = {
+    name: DEMO_SHOP.name,
+    platform: "demo" as const,
+    domain: DEMO_SHOP.domain,
+    productUrl: `https://${DEMO_SHOP.domain}/products/${DEMO_SHOP_PRODUCT_JSON.handle}`,
+    product: productFromShopifyJson(DEMO_SHOP_PRODUCT_JSON),
+    settings: DEFAULT_MATCH_SETTINGS,
+    adminTokenHash: hashSecret(DEMO_ADMIN_TOKEN),
+    isDemo: true,
+  };
+  const existing = await db.select({ id: shops.id }).from(shops).where(eq(shops.slug, DEMO_SHOP.slug));
+  if (existing.length) await db.update(shops).set(values).where(eq(shops.slug, DEMO_SHOP.slug));
+  else await db.insert(shops).values({ id: "shop_demo", slug: DEMO_SHOP.slug, ...values });
 }

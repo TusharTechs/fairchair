@@ -167,7 +167,7 @@ export const TEMPLATES: Record<ServiceTemplateId, () => Omit<Service, "id">> = {
       },
     ],
     supplies: { kind: "bundles", gramsPerBundle: 100, closure: false },
-    measures: ["type", "density", "length", "color"],
+    measures: ["type", "density", "length"],
     preview: "hair-ext",
   }),
 
@@ -206,7 +206,7 @@ export const TEMPLATES: Record<ServiceTemplateId, () => Omit<Service, "id">> = {
       kind: "tape-in-packs",
       packsByDensity: { "0": [2, 2], "1": [2, 3], "2": [4, 5], "3": [6, 7] },
     },
-    measures: ["type", "density", "length", "color"],
+    measures: ["type", "density", "length"],
     preview: "hair-ext",
   }),
 

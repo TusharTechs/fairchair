@@ -1,0 +1,22 @@
+{
+  "portrait": "curly-collarbone",
+  "ranAt": "2026-09-30T05:15:52.722Z",
+  "color": {
+    "color": {
+      "eye_color": "#5d411d",
+      "eye_color_name": "Brown",
+      "lip_color": "#da9790",
+      "eyebrow_color": "#805d47",
+      "skin_color": "#b9987e",
+      "hair_color": "#42280E",
+      "hair_color_name": "Brown"
+    },
+    "face_quality": {
+      "has_face": true,
+      "area": "toosmall",
+      "frontal": "good",
+      "lighting": "good",
+      "faceangle": "good"
+    }
+  }
+}

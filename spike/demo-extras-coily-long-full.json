@@ -1,0 +1,23 @@
+{
+  "portrait": "coily-long-full",
+  "ranAt": "2026-09-30T05:16:16.242Z",
+  "color": {
+    "color": {
+      "eye_color": "#131615",
+      "eye_color_name": "Brown",
+      "lip_color": "#cc948e",
+      "eyebrow_color": "#543931",
+      "skin_color": "#845e43",
+      "hair_color": "#000000",
+      "hair_color_name": "Black"
+    },
+    "face_quality": {
+      "has_face": true,
+      "area": "toosmall",
+      "frontal": "good",
+      "lighting": "good",
+      "faceangle": "good"
+    }
+  },
+  "ext": "saved"
+}

@@ -51,3 +51,17 @@ Four views of the "curly-collarbone" portrait posted to `POST /api/analyses` (kn
 - Demo path (recorded results, 0 units): analysis → quote → booking → receipt → recorded try-on all succeed.
 - **Found:** Vercel rejects request bodies over 4.5 MB (`FUNCTION_PAYLOAD_TOO_LARGE`). Four full-size photos (~8 MB) failed before reaching our code. Fix: the browser prepares photos at 1280 px / JPEG 0.85 (≈270 KB each, 1.1 MB for four); client and server enforce a friendly limit.
 - Live analysis on production with browser-sized photos: **all four measurements in 18 s**; values match Run 1 (density 0.73 vs 0.74 at full resolution — same grade), confirming 1280 px loses nothing.
+
+## Run 5 — 2026-10-01 · hair colour & extension try-on (for the store widget)
+**Hair colour (`skin-tone-analysis` → `hair_color`, 20 units each).** The output is one of 7 fixed colours (a family, not a shade).
+
+| Portrait | Hair colour by eye | YouCam `hair_color` | Correct? | `face_quality.area` |
+|---|---|---|---|---|
+| curly-collarbone (Maya) | brown | #42280E Brown | ✓ | toosmall |
+| coily-long-full (Nia) | black | #000000 Black | ✓ | toosmall |
+| coily-short (Tess) | black | #FAF0BE **Blonde** | ✗ | good |
+| kinky-chest-stretched (Ada) | black | #FAF0BE **Blonde** | ✗ | good |
+
+**Decision:** 2/4 wrong, both black hair on dark skin — the users this product exists for. FairChair **does not auto-select shade** from `hair_color`; the shopper chooses a colour family and is told which shade numbers to swatch. This also removes 20 units per match. Raw: `spike/demo-extras-*.json`.
+
+**Extension try-on (`hair-ext`, 1 unit):** 3 templates exist (`all_length_1`, `all_length_2_`, `all_length_3`; titles "Length 1–3"; no length/colour parameter). 6/6 runs succeeded (7–15 s). The added hair **keeps the client's own curl pattern**, which is exactly what a blend preview should show. Length differences mostly fall below a head-and-shoulders frame, so the UI presents it as "your hair with extensions", not exact inches.

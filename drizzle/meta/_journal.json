@@ -29,6 +29,13 @@
       "when": 1790744927752,
       "tag": "0003_assets",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790745293154,
+      "tag": "0004_shops",
+      "breakpoints": true
     }
   ]
 }

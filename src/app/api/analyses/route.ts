@@ -2,6 +2,7 @@ import { z } from "zod";
 import { createDemoAnalysis, createLiveAnalysis, LiveUnavailable, type Photos } from "@/lib/analysis/service";
 import { track } from "@/lib/events";
 import { clientIpHash, json, problem } from "@/lib/http";
+import { shopBySlug } from "@/lib/shops";
 import { studioBySlug } from "@/lib/studios";
 import { YouCamError } from "@/lib/youcam/errors";
 import { featuresFor, VIEWS } from "@/lib/youcam/features";
@@ -12,11 +13,14 @@ export const runtime = "nodejs";
 // resized selfies of a few hundred KB each.
 const MAX_BYTES = 3 * 1024 * 1024;
 const MAX_TOTAL = 4 * 1024 * 1024;
-const Fields = z.object({
-  studio: z.string().min(1).max(80),
-  service: z.string().min(1).max(80),
-  demo: z.string().max(40).optional(),
-});
+const Fields = z.union([
+  z.object({ studio: z.string().min(1).max(80), service: z.string().min(1).max(80), demo: z.string().max(40).optional() }),
+  z.object({ shop: z.string().min(1).max(80), demo: z.string().max(40).optional() }),
+]);
+
+// What an extension store needs measured: texture, fullness, length. Colour is
+// the shopper's choice (YouCam hair_color misread dark hair in our tests).
+const SHOP_FEATURES = featuresFor(["type", "density", "length"]);
 
 export async function POST(req: Request) {
   let form: FormData;
@@ -25,22 +29,29 @@ export async function POST(req: Request) {
   } catch {
     return problem(400, "bad_request", "Expected multipart form data.");
   }
-  const parsed = Fields.safeParse({
-    studio: form.get("studio"),
-    service: form.get("service"),
-    demo: form.get("demo") ?? undefined,
-  });
-  if (!parsed.success) return problem(400, "bad_request", "Missing studio or service.");
+  const raw = Object.fromEntries(["studio", "service", "shop", "demo"].flatMap((k) => (form.get(k) ? [[k, form.get(k)]] : [])));
+  const parsed = Fields.safeParse(raw);
+  if (!parsed.success) return problem(400, "bad_request", "Missing studio/service or shop.");
 
-  const found = await studioBySlug(parsed.data.studio);
-  const service = found?.studio.services.find((s) => s.id === parsed.data.service);
-  if (!found || !service) return problem(404, "not_found", "That studio or service doesn't exist.");
-  const features = featuresFor(service.measures);
+  let ownerId: string;
+  let features: ReturnType<typeof featuresFor>;
+  if ("shop" in parsed.data) {
+    const shop = await shopBySlug(parsed.data.shop);
+    if (!shop) return problem(404, "not_found", "That store doesn't exist.");
+    ownerId = shop.shop.id;
+    features = SHOP_FEATURES;
+  } else {
+    const found = await studioBySlug(parsed.data.studio);
+    const service = found?.studio.services.find((s) => s.id === (parsed.data as { service: string }).service);
+    if (!found || !service) return problem(404, "not_found", "That studio or service doesn't exist.");
+    ownerId = found.studio.id;
+    features = featuresFor(service.measures);
+  }
 
   if (parsed.data.demo) {
     try {
-      const id = await createDemoAnalysis(found.studio.id, parsed.data.demo, features);
-      await track("analysis_created", found.studio.id, { source: "demo", demo: parsed.data.demo });
+      const id = await createDemoAnalysis(ownerId, parsed.data.demo, features);
+      await track("analysis_created", ownerId, { source: "demo", demo: parsed.data.demo });
       return json({ id });
     } catch {
       return problem(404, "not_found", "Unknown demo client.");
@@ -61,8 +72,8 @@ export async function POST(req: Request) {
   if (total > MAX_TOTAL) return problem(413, "too_large", "Those photos are too large together. Please retake them.");
 
   try {
-    const id = await createLiveAnalysis({ studioId: found.studio.id, photos, features, ipHash: clientIpHash(req) });
-    await track("analysis_created", found.studio.id, { source: "live", views: Object.keys(photos) });
+    const id = await createLiveAnalysis({ studioId: ownerId, photos, features, ipHash: clientIpHash(req) });
+    await track("analysis_created", ownerId, { source: "live", views: Object.keys(photos) });
     return json({ id });
   } catch (e) {
     if (e instanceof LiveUnavailable) return problem(503, e.reason, e.message);
