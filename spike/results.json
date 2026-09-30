@@ -1,0 +1,416 @@
+{
+  "ranAt": "2026-09-29T19:58:35.319Z",
+  "personas": [
+    {
+      "id": "coily-long-full",
+      "intended": {
+        "type": "4b–4c",
+        "density": "high",
+        "length": "long / past shoulders (stretched)",
+        "frizz": "frizzy"
+      },
+      "detections": {
+        "hair-type": [
+          {
+            "results": {
+              "hair_type": {
+                "mapping": "4B to 4C",
+                "term": "Coily to Extremely Coily"
+              }
+            },
+            "ms": 10400
+          },
+          {
+            "results": {
+              "hair_type": {
+                "mapping": "4B to 4C",
+                "term": "Coily to Extremely Coily"
+              }
+            },
+            "ms": 32892
+          }
+        ],
+        "hair-density": [
+          {
+            "results": {
+              "timed": 4641,
+              "hair_density": {
+                "mapping": "2.11",
+                "term": "Medium Density"
+              }
+            },
+            "ms": 24023
+          },
+          {
+            "results": {
+              "timed": 4905,
+              "hair_density": {
+                "mapping": "2.11",
+                "term": "Medium Density"
+              }
+            },
+            "ms": 17237
+          }
+        ],
+        "hair-length": [
+          {
+            "results": {
+              "hair_length": {
+                "term": "short hair"
+              },
+              "timed": 6709
+            },
+            "ms": 28305
+          },
+          {
+            "results": {
+              "hair_length": {
+                "term": "short hair"
+              },
+              "timed": 6437
+            },
+            "ms": 24648
+          }
+        ],
+        "hair-frizz": [
+          {
+            "results": {
+              "hair_frizziness": {
+                "mapping": 1,
+                "term": "Slightly Frizzy"
+              }
+            },
+            "ms": 17050
+          },
+          {
+            "results": {
+              "hair_frizziness": {
+                "mapping": 1,
+                "term": "Slightly Frizzy"
+              }
+            },
+            "ms": 10376
+          }
+        ]
+      }
+    },
+    {
+      "id": "curly-collarbone",
+      "intended": {
+        "type": "3b–3c",
+        "density": "medium",
+        "length": "collarbone",
+        "frizz": "slight"
+      },
+      "detections": {
+        "hair-type": [
+          {
+            "results": {
+              "hair_type": {
+                "mapping": "3B to 3C",
+                "term": "Medium to Tight Curls"
+              }
+            },
+            "ms": 21020
+          },
+          {
+            "results": {
+              "hair_type": {
+                "mapping": "3B to 3C",
+                "term": "Medium to Tight Curls"
+              }
+            },
+            "ms": 20926
+          }
+        ],
+        "hair-density": [
+          {
+            "results": {
+              "timed": 4831,
+              "hair_density": {
+                "mapping": "2.57",
+                "term": "High Density"
+              }
+            },
+            "ms": 44007
+          },
+          {
+            "results": {
+              "timed": 4946,
+              "hair_density": {
+                "mapping": "2.57",
+                "term": "High Density"
+              }
+            },
+            "ms": 24595
+          }
+        ],
+        "hair-length": [
+          {
+            "results": {
+              "hair_length": {
+                "term": "above chest"
+              },
+              "timed": 8016
+            },
+            "ms": 51822
+          },
+          {
+            "results": {
+              "hair_length": {
+                "term": "above chest"
+              },
+              "timed": 7433
+            },
+            "ms": 33020
+          }
+        ],
+        "hair-frizz": [
+          {
+            "results": {
+              "hair_frizziness": {
+                "mapping": 1,
+                "term": "Slightly Frizzy"
+              }
+            },
+            "ms": 40662
+          },
+          {
+            "results": {
+              "hair_frizziness": {
+                "mapping": 1,
+                "term": "Slightly Frizzy"
+              }
+            },
+            "ms": 41881
+          }
+        ]
+      }
+    },
+    {
+      "id": "coily-short",
+      "intended": {
+        "type": "4a–4c",
+        "density": "medium-high",
+        "length": "short / above ears",
+        "frizz": "slight"
+      },
+      "generate": {
+        "ok": true,
+        "ms": 8869
+      },
+      "detections": {
+        "hair-type": [
+          {
+            "results": {
+              "hair_type": {
+                "mapping": "4B to 4C",
+                "term": "Coily to Extremely Coily"
+              }
+            },
+            "ms": 10254
+          }
+        ],
+        "hair-density": [
+          {
+            "results": {
+              "timed": 5601,
+              "hair_density": {
+                "mapping": "0.74",
+                "term": "Low Density"
+              }
+            },
+            "ms": 18395
+          }
+        ],
+        "hair-length": [
+          {
+            "results": {
+              "hair_length": {
+                "term": "above the ears"
+              },
+              "timed": 8134
+            },
+            "ms": 25507
+          }
+        ],
+        "hair-frizz": [
+          {
+            "results": {
+              "hair_frizziness": {
+                "mapping": 2,
+                "term": "Frizzy"
+              }
+            },
+            "ms": 34099
+          }
+        ]
+      }
+    },
+    {
+      "id": "straight-fine-shoulder",
+      "intended": {
+        "type": "1–2a",
+        "density": "low",
+        "length": "shoulder",
+        "frizz": "none"
+      },
+      "generate": {
+        "ok": true,
+        "ms": 8598
+      },
+      "detections": {
+        "hair-type": [
+          {
+            "results": {
+              "hair_type": {
+                "mapping": "1 to 2A",
+                "term": "Straight to Slight Wavy"
+              }
+            },
+            "ms": 23663
+          }
+        ],
+        "hair-density": [
+          {
+            "error": "error_face_angle_invalid",
+            "message": "The face angle is not within the supported range. For front-facing photos, keep the head within 10°; for side-facing photos, use more than 15°.",
+            "ms": 46839
+          }
+        ],
+        "hair-length": [
+          {
+            "results": {
+              "hair_length": {
+                "term": "above chest"
+              },
+              "timed": 8475
+            },
+            "ms": 38538
+          }
+        ],
+        "hair-frizz": [
+          {
+            "results": {
+              "hair_frizziness": {
+                "mapping": 0,
+                "term": "Not Frizzy"
+              }
+            },
+            "ms": 30999
+          }
+        ]
+      }
+    },
+    {
+      "id": "wavy-long",
+      "intended": {
+        "type": "2b–2c",
+        "density": "medium",
+        "length": "long / past chest",
+        "frizz": "slight"
+      },
+      "generate": {
+        "ok": true,
+        "ms": 8111
+      },
+      "detections": {
+        "hair-type": [
+          {
+            "results": {
+              "hair_type": {
+                "mapping": "2B to 2C",
+                "term": "Medium to Thick Wavy"
+              }
+            },
+            "ms": 10146
+          }
+        ],
+        "hair-density": [
+          {
+            "error": "error_face_angle_invalid",
+            "message": "The face angle is not within the supported range. For front-facing photos, keep the head within 10°; for side-facing photos, use more than 15°.",
+            "ms": 24485
+          }
+        ],
+        "hair-length": [
+          {
+            "results": {
+              "hair_length": {
+                "term": "long hair"
+              },
+              "timed": 7252
+            },
+            "ms": 21204
+          }
+        ],
+        "hair-frizz": [
+          {
+            "results": {
+              "hair_frizziness": {
+                "mapping": 1,
+                "term": "Slightly Frizzy"
+              }
+            },
+            "ms": 33793
+          }
+        ]
+      }
+    },
+    {
+      "id": "kinky-chest-stretched",
+      "intended": {
+        "type": "4a–4b",
+        "density": "high",
+        "length": "chest (stretched)",
+        "frizz": "frizzy"
+      },
+      "generate": {
+        "ok": true,
+        "ms": 8503
+      },
+      "detections": {
+        "hair-type": [
+          {
+            "results": {
+              "hair_type": {
+                "mapping": "4B to 4C",
+                "term": "Coily to Extremely Coily"
+              }
+            },
+            "ms": 13909
+          }
+        ],
+        "hair-density": [
+          {
+            "error": "error_face_angle_invalid",
+            "message": "The face angle is not within the supported range. For front-facing photos, keep the head within 10°; for side-facing photos, use more than 15°.",
+            "ms": 17517
+          }
+        ],
+        "hair-length": [
+          {
+            "results": {
+              "hair_length": {
+                "term": "long hair"
+              },
+              "timed": 8614
+            },
+            "ms": 25059
+          }
+        ],
+        "hair-frizz": [
+          {
+            "results": {
+              "hair_frizziness": {
+                "mapping": 0,
+                "term": "Not Frizzy"
+              }
+            },
+            "ms": 37997
+          }
+        ]
+      }
+    }
+  ]
+}

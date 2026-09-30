@@ -1,0 +1,158 @@
+{
+  "ranAt": "2026-09-29T20:10:56.020Z",
+  "personas": [
+    {
+      "id": "straight-fine-shoulder",
+      "intended": {
+        "type": "1–2a",
+        "density": "low",
+        "length": "shoulder",
+        "frizz": "none"
+      },
+      "detections": {
+        "hair-type": [
+          {
+            "results": {
+              "hair_type": {
+                "mapping": "1 to 2A",
+                "term": "Straight to Slight Wavy"
+              }
+            },
+            "ms": 13575
+          }
+        ],
+        "hair-density": [
+          {
+            "error": "error_face_angle_invalid",
+            "message": "The face angle is not within the supported range. For front-facing photos, keep the head within 10°; for side-facing photos, use more than 15°.",
+            "ms": 17868
+          }
+        ],
+        "hair-length": [
+          {
+            "results": {
+              "hair_length": {
+                "term": "above chest"
+              },
+              "timed": 9172
+            },
+            "ms": 40110
+          }
+        ],
+        "hair-frizz": [
+          {
+            "results": {
+              "hair_frizziness": {
+                "mapping": 0,
+                "term": "Not Frizzy"
+              }
+            },
+            "ms": 48788
+          }
+        ]
+      }
+    },
+    {
+      "id": "wavy-long",
+      "intended": {
+        "type": "2b–2c",
+        "density": "medium",
+        "length": "long / past chest",
+        "frizz": "slight"
+      },
+      "detections": {
+        "hair-type": [
+          {
+            "results": {
+              "hair_type": {
+                "mapping": "2B to 2C",
+                "term": "Medium to Thick Wavy"
+              }
+            },
+            "ms": 10574
+          }
+        ],
+        "hair-density": [
+          {
+            "error": "error_face_angle_invalid",
+            "message": "The face angle is not within the supported range. For front-facing photos, keep the head within 10°; for side-facing photos, use more than 15°.",
+            "ms": 14261
+          }
+        ],
+        "hair-length": [
+          {
+            "results": {
+              "hair_length": {
+                "term": "long hair"
+              },
+              "timed": 7753
+            },
+            "ms": 26224
+          }
+        ],
+        "hair-frizz": [
+          {
+            "results": {
+              "hair_frizziness": {
+                "mapping": 1,
+                "term": "Slightly Frizzy"
+              }
+            },
+            "ms": 34935
+          }
+        ]
+      }
+    },
+    {
+      "id": "kinky-chest-stretched",
+      "intended": {
+        "type": "4a–4b",
+        "density": "high",
+        "length": "chest (stretched)",
+        "frizz": "frizzy"
+      },
+      "detections": {
+        "hair-type": [
+          {
+            "results": {
+              "hair_type": {
+                "mapping": "4B to 4C",
+                "term": "Coily to Extremely Coily"
+              }
+            },
+            "ms": 10548
+          }
+        ],
+        "hair-density": [
+          {
+            "error": "error_face_angle_invalid",
+            "message": "The face angle is not within the supported range. For front-facing photos, keep the head within 10°; for side-facing photos, use more than 15°.",
+            "ms": 34098
+          }
+        ],
+        "hair-length": [
+          {
+            "results": {
+              "hair_length": {
+                "term": "long hair"
+              },
+              "timed": 7628
+            },
+            "ms": 29695
+          }
+        ],
+        "hair-frizz": [
+          {
+            "results": {
+              "hair_frizziness": {
+                "mapping": 0,
+                "term": "Not Frizzy"
+              }
+            },
+            "ms": 21371
+          }
+        ]
+      }
+    }
+  ]
+}

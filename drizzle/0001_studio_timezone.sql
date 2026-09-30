@@ -1,0 +1,1 @@
+ALTER TABLE "studios" ADD COLUMN "timezone" text DEFAULT 'America/New_York' NOT NULL;

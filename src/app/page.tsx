@@ -1,69 +1,228 @@
-import Image from "next/image";
+import { TwoHeads } from "@/components/two-heads";
+import { ButtonLink, Card, Eyebrow, MeasuredChip, SiteHeader } from "@/components/ui";
+import { DEMO_ADMIN_TOKEN, DEMO_STUDIO_SLUG } from "@/lib/db/seed";
+import { studioBySlug } from "@/lib/studios";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+const SOURCES = {
+  birmingham: "https://www.aol.com/lifestyle/hair-appointment-gone-wrong-alabama-220000154.html",
+  starting: "https://thebraidlounge.com/frequently-asked-questions/",
+  hours: "https://defendernetwork.com/culture/black-hair-braids-culture/",
+  dispute: "https://www.homebusinesshub.us/blog/how-much-to-charge-for-hair-braiding/",
+  manual: "https://braidbosspro.app/",
+};
+
+export default async function Home() {
+  const demo = await studioBySlug(DEMO_STUDIO_SLUG);
+  const studio = demo!.studio;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
+    <>
+      <SiteHeader
+        right={
+          <>
+            <ButtonLink href={`/studio/${DEMO_STUDIO_SLUG}?key=${DEMO_ADMIN_TOKEN}`} variant="ghost" className="hidden sm:inline-flex">
+              Stylist view
+            </ButtonLink>
+            <ButtonLink href="/start" variant="secondary">
+              Set up your studio
+            </ButtonLink>
+          </>
+        }
+      />
+
+      <main className="flex-1">
+        {/* Hero */}
+        <section className="mx-auto grid max-w-6xl gap-10 px-4 pb-14 pt-12 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:pt-20">
+          <div className="rise">
+            <Eyebrow>For braiders &amp; extension stylists</Eyebrow>
+            <h1 className="mt-4 font-display text-[2.6rem] font-extrabold leading-[1.02] sm:text-6xl">
+              Price the hair,
+              <br />
+              not the argument.
+            </h1>
+            <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink-2">
+              FairChair measures a client&apos;s hair from two photos with <strong className="font-semibold text-ink">YouCam Hair AI</strong>, then
+              turns your menu into a line-item quote, an appointment as long as the hair actually needs, and a supply list —{" "}
+              <em>before</em> anyone books.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <ButtonLink href={`/s/${DEMO_STUDIO_SLUG}`} size="lg">
+                Get a quote as a client
+              </ButtonLink>
+              <ButtonLink href="#two-heads" size="lg" variant="secondary">
+                See two heads, two quotes
+              </ButtonLink>
+            </div>
+            <div className="mt-8 flex flex-wrap gap-2">
+              <MeasuredChip>Hair Type</MeasuredChip>
+              <MeasuredChip>Hair Density</MeasuredChip>
+              <MeasuredChip>Hair Length</MeasuredChip>
+              <MeasuredChip>Hair Frizziness</MeasuredChip>
+              <MeasuredChip>Hair Colour</MeasuredChip>
+            </div>
+          </div>
+
+          <Card className="rise self-start p-5 sm:p-6 [animation-delay:120ms]">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Today, 11:04 pm</p>
+            <div className="mt-4 space-y-3 text-[0.95rem]">
+              <p className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-md bg-ink px-4 py-2.5 text-surface">
+                hey!! how much for medium knotless, mid-back? 🙏🏾
+              </p>
+              <p className="w-fit max-w-[85%] rounded-2xl rounded-bl-md bg-surface-2 px-4 py-2.5">starts at $220 but send a pic, depends on your hair</p>
+              <p className="ml-auto w-fit max-w-[85%] rounded-2xl rounded-br-md bg-ink px-4 py-2.5 text-surface">[blurry selfie]</p>
+              <p className="w-fit max-w-[85%] rounded-2xl rounded-bl-md bg-surface-2 px-4 py-2.5">ok should be around $220 😊</p>
+            </div>
+            <div className="mt-5 rounded-xl border border-dashed border-danger/40 bg-danger/5 px-4 py-3 text-sm text-ink-2">
+              <strong className="text-danger">Saturday:</strong> fuller, longer hair than the selfie showed. Two extra hours. “It&apos;s $50
+              more.” Next client waits. Nobody is happy.
+            </div>
+          </Card>
+        </section>
+
+        {/* Problem */}
+        <section className="border-y border-line bg-surface">
+          <div className="mx-auto grid max-w-6xl gap-8 px-4 py-14 sm:px-6 md:grid-cols-3">
+            <Problem
+              n="01"
+              title="“Starting at” is a guess"
+              body="Braid prices depend on the client's natural length, fullness and texture. Studios say so in their FAQs — then quote from a DM."
+              href={SOURCES.starting}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+            <Problem
+              n="02"
+              title="The chair runs over"
+              body="Many braided styles take 6 hours or more, some 10–12. A full head booked into a standard slot pushes the whole day."
+              href={SOURCES.hours}
+            />
+            <Problem
+              n="03"
+              title="The surcharge becomes a fight"
+              body="In Nov 2025 a $200 text quote and a $50 day-of add-on escalated to arrests in Birmingham, AL. Existing quote tools still make someone type the hair in."
+              href={SOURCES.birmingham}
+            />
+          </div>
+        </section>
+
+        {/* Two heads */}
+        <section id="two-heads" className="mx-auto max-w-6xl scroll-mt-20 px-4 py-16 sm:px-6">
+          <div className="max-w-2xl">
+            <Eyebrow>The whole idea in one screen</Eyebrow>
+            <h2 className="mt-3 font-display text-4xl font-extrabold leading-tight">Same style. Two heads. Two honest quotes.</h2>
+            <p className="mt-3 text-lg text-ink-2">
+              Both clients ask {studio.name} for medium knotless, mid-back. FairChair measures each head, applies the stylist&apos;s own
+              rules, and shows exactly why the numbers differ.
+            </p>
+          </div>
+          <div className="mt-10">
+            <TwoHeads studio={studio} serviceId="knotless" options={{ size: "medium", length: "mid-back" }} />
+          </div>
+        </section>
+
+        {/* How it works */}
+        <section className="border-y border-line bg-surface">
+          <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+            <Eyebrow>How it works</Eyebrow>
+            <div className="mt-6 grid gap-6 md:grid-cols-3">
+              <Step
+                n="1"
+                title="Measure"
+                body="The client takes a front photo (and optionally the back). YouCam's hair detectors read curl pattern, density, natural length and frizz — plus hair colour for extension services."
+              />
+              <Step
+                n="2"
+                title="Price"
+                body="Your menu, your hourly rate, your rules. Measured differences become minutes of chair time and a price range — never a surcharge for texture."
+              />
+              <Step
+                n="3"
+                title="Agree"
+                body="The client sees every line and why, books a slot already sized to the work, and pays a deposit. Both of you keep the same hashed receipt."
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Fair by design */}
+        <section className="mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2">
+          <div>
+            <Eyebrow>Fair by design</Eyebrow>
+            <h2 className="mt-3 font-display text-4xl font-extrabold leading-tight">Texture changes time. It never changes the rate.</h2>
+            <p className="mt-4 text-lg text-ink-2">
+              Coily hair can take longer to stretch and detangle — that&apos;s real work, and FairChair prices it as minutes at your hourly
+              rate. A flat “+$25 for 4C” is a texture surcharge. FairChair won&apos;t apply one; it flags it and offers the time-based
+              equivalent.
+            </p>
+          </div>
+          <Card className="p-5 sm:p-6">
+            <p className="text-sm font-semibold">Rule check</p>
+            <div className="mt-3 rounded-xl border border-warn/40 bg-warn-soft px-4 py-3 text-sm">
+              <p className="font-semibold text-warn">“+$25 if hair is 4C” is a texture surcharge</p>
+              <p className="mt-1 text-ink-2">At your $40/h rate that&apos;s about 40 minutes. Price it as prep time instead?</p>
+            </div>
+            <div className="mt-3 rounded-xl border border-measured/30 bg-measured-soft px-4 py-3 text-sm">
+              <p className="font-semibold text-measured">Stretch &amp; detangle prep · Coily (4a–4c) · +70 min</p>
+              <p className="mt-1 text-ink-2">Shown to every client with the measurement that triggered it.</p>
+            </div>
+          </Card>
+        </section>
+
+        {/* CTA */}
+        <section className="border-t border-line bg-ink text-surface">
+          <div className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-4 py-14 sm:px-6 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h2 className="font-display text-3xl font-extrabold">Put an honest quote link in your bio.</h2>
+              <p className="mt-2 max-w-xl text-surface/75">
+                Set up your menu in three minutes. Clients get a real number; you get the right-length day.
+              </p>
+              <p className="mt-2 text-sm text-surface/60">Free for stylists during the pilot.</p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <ButtonLink href="/start" size="lg" variant="inverse">
+                Set up your studio
+              </ButtonLink>
+              <ButtonLink
+                href={`/studio/${DEMO_STUDIO_SLUG}?key=${DEMO_ADMIN_TOKEN}`}
+                size="lg"
+                variant="ghost-inverse"
+              >
+                Explore the stylist view
+              </ButtonLink>
+            </div>
+          </div>
+        </section>
       </main>
+
+      <footer className="border-t border-line">
+        <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-8 text-sm text-muted sm:flex-row sm:justify-between sm:px-6">
+          <p>FairChair measures appearance for pricing and scheduling. It does not assess hair or scalp health.</p>
+          <p>Hair analysis by YouCam API (Perfect Corp.).</p>
+        </div>
+      </footer>
+    </>
+  );
+}
+
+function Problem({ n, title, body, href }: { n: string; title: string; body: string; href: string }) {
+  return (
+    <div>
+      <p className="font-mono text-sm text-accent">{n}</p>
+      <h3 className="mt-2 font-display text-xl font-bold">{title}</h3>
+      <p className="mt-2 text-ink-2">{body}</p>
+      <a href={href} target="_blank" rel="noreferrer" className="mt-2 inline-block text-xs text-muted underline underline-offset-2 hover:text-ink">
+        Source
+      </a>
+    </div>
+  );
+}
+
+function Step({ n, title, body }: { n: string; title: string; body: string }) {
+  return (
+    <div className="rounded-2xl border border-line bg-bg p-5">
+      <span className="grid h-8 w-8 place-items-center rounded-full bg-accent font-display font-bold text-surface">{n}</span>
+      <h3 className="mt-4 font-display text-xl font-bold">{title}</h3>
+      <p className="mt-2 text-ink-2">{body}</p>
     </div>
   );
 }
