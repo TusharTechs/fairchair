@@ -21,7 +21,7 @@ We noticed that YouCam launched exactly those four measurements as APIs in June 
 FairChair is a quote link a stylist puts in their bio.
 
 1. **Measure.** The client picks a style and takes four guided selfies (straight on, turned right, turned left, chin down — the angles YouCam's detectors require). YouCam reads curl pattern (1 → 4c), density (0–3), natural length and frizz, plus hair colour for extension services.
-2. **Price.** The stylist's own menu and hourly rate turn measured differences into **minutes of chair time** and a price range. Every line on the quote shows the measurement that caused it — e.g. *"Parting and feeding a fuller head · +45 min · Hair Density: High Density (2.57/3)"*.
+2. **Price.** The stylist's own menu and hourly rate turn measured differences into **minutes of chair time** and a price range. Every line on the quote shows the measurement that caused it — e.g. *"Parting and feeding, by hair fullness · +45 min · Hair Density: High Density (2.57/3)"*.
 3. **See it.** One tap shows the stylist's *own portfolio photo* on the client — YouCam hair-transfer with a custom reference — before any deposit is paid. The preview isn't stored.
 4. **Agree.** The client books a slot already sized to the work (only start times that fit are offered) and both sides keep the same hashed receipt.
 5. **Learn.** After the appointment the stylist logs the real time; FairChair shows which of *their* rules consistently runs over.

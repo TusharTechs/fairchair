@@ -21,7 +21,12 @@ export async function ensureDemoStudio(db: DB) {
   const existing = await db.select({ id: studios.id }).from(studios).where(eq(studios.slug, DEMO_STUDIO_SLUG));
   if (existing.length) {
     // The demo studio is read-only: keep it in sync with the canonical menu.
-    await db.update(studios).set({ services: demoServices() }).where(eq(studios.slug, DEMO_STUDIO_SLUG));
+    // Re-derive the public demo key's hash too, so rotating APP_SECRET never
+    // locks judges out of the demo studio.
+    await db
+      .update(studios)
+      .set({ services: demoServices(), adminTokenHash: hashSecret(DEMO_ADMIN_TOKEN) })
+      .where(eq(studios.slug, DEMO_STUDIO_SLUG));
     return;
   }
   await db.insert(studios).values({

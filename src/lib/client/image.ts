@@ -1,5 +1,7 @@
-// Client-side photo preparation: decode, orient, downscale (≤1600 px long
-// side) and re-encode as JPEG. Re-encoding strips EXIF metadata (including
+// Client-side photo preparation: decode, orient, downscale (≤1280 px long
+// side — YouCam's hair detectors work at ≤1080 px) and re-encode as JPEG.
+// Keeping each photo to a few hundred KB keeps all four selfies well under the
+// 4.5 MB request limit of serverless hosting. Re-encoding strips EXIF metadata (including
 // location) before anything leaves the phone. YouCam's multi-angle hair
 // detectors require every view to be the same size, so side views can be
 // cover-fitted to the front photo's exact dimensions.
@@ -18,7 +20,7 @@ export async function prepareImage(file: File, opts: { maxSide?: number; size?: 
   if (opts.size) {
     ({ width, height } = opts.size);
   } else {
-    const scale = Math.min(1, (opts.maxSide ?? 1600) / Math.max(bitmap.width, bitmap.height));
+    const scale = Math.min(1, (opts.maxSide ?? 1280) / Math.max(bitmap.width, bitmap.height));
     width = Math.round(bitmap.width * scale);
     height = Math.round(bitmap.height * scale);
   }
@@ -35,7 +37,7 @@ export async function prepareImage(file: File, opts: { maxSide?: number; size?: 
   const dh = bitmap.height * s;
   canvas.getContext("2d")!.drawImage(bitmap, (width - dw) / 2, (height - dh) / 2, dw, dh);
   bitmap.close();
-  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.88));
+  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.85));
   if (!blob) throw new Error("We couldn't process that photo.");
   return { blob, width, height };
 }

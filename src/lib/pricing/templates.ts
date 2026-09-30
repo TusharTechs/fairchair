@@ -54,13 +54,13 @@ export const TEMPLATES: Record<ServiceTemplateId, () => Omit<Service, "id">> = {
       {
         id: "density",
         basis: "density",
-        label: "Parting and feeding a fuller head",
+        label: "Parting and feeding, by hair fullness",
         minutes: { "0": -20, "1": -10, "2": 0, "3": 45 },
       },
       {
         id: "natural-length",
         basis: "length",
-        label: "Grip on short hair / detangling long hair",
+        label: "Working with your natural length",
         minutes: { short: 15, shoulder: 0, chest: 15, long: 35 },
       },
       {
@@ -108,7 +108,7 @@ export const TEMPLATES: Record<ServiceTemplateId, () => Omit<Service, "id">> = {
       {
         id: "density",
         basis: "density",
-        label: "More sections to blow out and press",
+        label: "Sections to blow out, by fullness",
         minutes: { "0": -10, "1": -5, "2": 0, "3": 30 },
       },
       {
@@ -150,13 +150,13 @@ export const TEMPLATES: Record<ServiceTemplateId, () => Omit<Service, "id">> = {
       {
         id: "braid-down",
         basis: "density",
-        label: "Braid-down on a fuller head",
+        label: "Braid-down, by hair fullness",
         minutes: { "0": -10, "1": -5, "2": 0, "3": 30 },
       },
       {
         id: "natural-length",
         basis: "length",
-        label: "Tucking and flattening longer hair",
+        label: "Tucking your natural length",
         minutes: { short: 0, shoulder: 0, chest: 10, long: 20 },
       },
       {
@@ -192,13 +192,13 @@ export const TEMPLATES: Record<ServiceTemplateId, () => Omit<Service, "id">> = {
       {
         id: "packs",
         basis: "density",
-        label: "More packs to install for a fuller head",
+        label: "Installing packs, by hair fullness",
         minutes: { "0": -15, "1": -10, "2": 0, "3": 25 },
       },
       {
         id: "blend",
         basis: "length",
-        label: "Blending over short natural hair",
+        label: "Blending over your natural length",
         minutes: { short: 20, shoulder: 10, chest: 0, long: 0 },
       },
     ],
@@ -221,13 +221,13 @@ export const TEMPLATES: Record<ServiceTemplateId, () => Omit<Service, "id">> = {
       {
         id: "braid-down",
         basis: "density",
-        label: "Flat braid-down on a fuller head",
+        label: "Flat braid-down, by hair fullness",
         minutes: { "0": -10, "1": -5, "2": 0, "3": 25 },
       },
       {
         id: "natural-length",
         basis: "length",
-        label: "Braiding down longer hair",
+        label: "Braiding down your natural length",
         minutes: { short: -10, shoulder: 0, chest: 10, long: 20 },
       },
       {

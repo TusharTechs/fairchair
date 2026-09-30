@@ -386,6 +386,11 @@ function PhotoStep(props: {
           className="mt-4 w-full"
           disabled={!shots.front || !consent || busy || !live?.live}
           onClick={() => {
+            const total = VIEWS.reduce((sum, v) => sum + (shots[v]?.blob.size ?? 0), 0);
+            if (total > 4_000_000) {
+              setLocalError("Those photos are unusually large. Retake them with your phone's standard camera (not RAW or ProRAW).");
+              return;
+            }
             setBusy(true);
             const fd = base();
             for (const view of VIEWS) {

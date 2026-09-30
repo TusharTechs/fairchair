@@ -8,7 +8,10 @@ import { featuresFor, VIEWS } from "@/lib/youcam/features";
 
 export const runtime = "nodejs";
 
-const MAX_BYTES = 8 * 1024 * 1024;
+// Serverless hosting caps request bodies at ~4.5 MB; the browser sends four
+// resized selfies of a few hundred KB each.
+const MAX_BYTES = 3 * 1024 * 1024;
+const MAX_TOTAL = 4 * 1024 * 1024;
 const Fields = z.object({
   studio: z.string().min(1).max(80),
   service: z.string().min(1).max(80),
@@ -49,11 +52,13 @@ export async function POST(req: Request) {
   for (const view of VIEWS) {
     const f = form.get(view);
     if (!(f instanceof File)) continue;
-    if (f.size > MAX_BYTES) return problem(413, "too_large", "Each photo must be under 8 MB.");
+    if (f.size > MAX_BYTES) return problem(413, "too_large", "Each photo must be under 3 MB.");
     if (f.type !== "image/jpeg" && f.type !== "image/png") return problem(415, "unsupported", "Photos must be JPG or PNG.");
     photos[view] = { bytes: new Uint8Array(await f.arrayBuffer()), contentType: f.type };
   }
   if (!photos.front) return problem(400, "bad_request", "A front photo is required.");
+  const total = Object.values(photos).reduce((sum, p) => sum + (p?.bytes.byteLength ?? 0), 0);
+  if (total > MAX_TOTAL) return problem(413, "too_large", "Those photos are too large together. Please retake them.");
 
   try {
     const id = await createLiveAnalysis({ studioId: found.studio.id, photos, features, ipHash: clientIpHash(req) });

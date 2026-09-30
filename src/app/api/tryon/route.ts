@@ -9,7 +9,7 @@ import { YouCamError, guidanceFor } from "@/lib/youcam/errors";
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-const MAX_BYTES = 8 * 1024 * 1024;
+const MAX_BYTES = 3 * 1024 * 1024;
 
 export async function POST(req: Request) {
   const form = await req.formData().catch(() => null);
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
   const front = form.get("front");
   if (!(front instanceof File)) return problem(400, "bad_request", "Send your front photo.");
   if (front.size > MAX_BYTES || (front.type !== "image/jpeg" && front.type !== "image/png")) {
-    return problem(415, "unsupported", "Use a JPG or PNG under 8 MB.");
+    return problem(415, "unsupported", "Use a JPG or PNG under 3 MB.");
   }
 
   const status = await liveStatus(clientIpHash(req));
