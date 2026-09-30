@@ -2,19 +2,18 @@
 
 _Last updated: 2026-09-30 (end of day 1)_
 
-## ▶ Resume here (day 2)
-1. Check `spike/results-straight-fine-shoulder+wavy-long+kinky-chest-stretched.json` (density retry with a better chin-down view) and add it to `docs/measurements.md`.
-2. **Four-selfie capture** (spike finding): front → turn right → turn left → chin down. Update `src/app/api/analyses/route.ts` (named fields), `src/lib/analysis/service.ts` (`photosFor` by view; type/frizz need exactly [front,right,left], same size; density uses chin-down), and the PhotoStep UI in `src/app/s/[slug]/quote-flow.tsx`. Consider YouCam JS Camera Kit for guided capture.
-3. Stretched-length prompt in the result step for curly/coily hair (engine support + test done: `options.stretched`).
-4. Replace `sample` demo clients in `src/data/demo-clients.ts` with **recorded real YouCam results** from the spike (AI-generated portraits in `public/demo/generated/`), `source: "replay"`, `recordedAt: "2026-09-30"`. Show the real portraits instead of illustrations.
-5. Run the full flow once live end-to-end (`npm run dev`, real photos).
-6. Try-on preview (hair-transfer with a stylist portfolio photo).
-7. Then: deploy (Vercel + Neon), demo script, Devpost draft, adversarial review round 2.
+## ▶ Resume here
+Done on day 2 (2026-10-01): four-selfie capture (YouCam's documented protocol), stretched-length prompt, real recorded demo clients (Maya/Nia/Tess/Ada), live end-to-end run through our API (14 s; found and fixed premature `task/delete` bug + transient retry), favicon/apple icon, Mermaid diagrams, README, production build, first commit, business assessment (`docs/business.md`).
 
-Run: `npm run dev` · tests: `npm test` · key/balance check (0 units): `npm run youcam:check` · spike: `npm run spike`
+Next:
+1. User creates GitHub repo `fairchair`, pushes, imports into Vercel, adds Neon + env vars (`DATABASE_URL`, `YOUCAM_API_KEY`, `APP_SECRET`).
+2. Verify the deployed judge path end to end; test live capture on a real phone (real, consented selfies → validates density).
+3. Try-on preview step (hair-transfer with a stylist portfolio photo).
+4. Demo script (`docs/demo-script.md`), Devpost draft (`docs/devpost-submission-draft.md`), adversarial review round 2.
+5. Share repo with contact_event@PerfectCorp.com if private.
 
-## Current objective
-Phase 2: UX prototype of **FairChair** with replay data, while the live-API accuracy spike (Phase 3 gate) waits on a YouCam API key.
+Commits: author tusharaggarwal274@gmail.com only, no co-author/Claude trailers.
+Dev server: `npm run dev` from this folder (the in-app preview launcher starts from an old folder — run it directly).
 
 ## Hackathon essentials
 - Deadline **Nov 2, 2026, 11:45 am ET**. Judging Nov 3–20. Winners ~Nov 24.
