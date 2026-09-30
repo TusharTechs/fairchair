@@ -46,3 +46,15 @@ Each round: attack as a skeptical first-round judge, then record the fix. Seriou
 | 6 | "Unit economics?" | Addressed | ~$0.38/quote; model tied to deposits (`docs/business.md`). Not shown as in-app pricing. |
 | 7 | "Privacy of face photos." | Addressed | Consent, EXIF strip, no storage, upstream delete after completion; biometric-law risk noted in business doc for launch. |
 | 8 | "Does it work for judges during Nov 3–20?" | Medium | Recorded demo path needs no units; live path protected by reserve + cap; keep batch B (1,000 units, expires Dec 28) for judging. Verify on the deployed URL. |
+
+---
+
+## Round 3 — after store widget, Camera Kit, portfolio (2026-10-01)
+
+| # | Judge's attack | Status |
+|---|---|---|
+| 1 | "Two products — is this unfocused?" | One insight (measure hair before a commitment), two buyers who both live with it. Landing and Devpost lead with the stylist story; the store is "the same measurement, on a store". |
+| 2 | "Is the Shopify integration real?" | Cart permalinks and public product JSON are Shopify's documented, app-free mechanisms; onboarding reads a real product link. Still to show: a real Shopify dev store end to end. |
+| 3 | "You drop YouCam's hair colour — isn't that a knock on the sponsor's API?" | Framed as evidence-driven product rigour with the exact result table; it protects the users the product serves and is useful feedback for Perfect Corp. |
+| 4 | "Guided camera untested?" | Wiring verified up to the camera; real capture pending a phone test. Manual upload fallback remains. |
+| 5 | "Any real users?" | **Open.** Highest-value remaining item (see `docs/judging-scorecard.md`). |
